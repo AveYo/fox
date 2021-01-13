@@ -16,8 +16,8 @@ window.gBrowser = window._gBrowser; let UC = {}; // inspired by github /xiaoxiao
 
 
 /// Simple Hotkeys Override by AveYo
-/// for available commands, see C:\Program Files\Mozilla Firefox\browser\omni.ja/chrome/browser/content/browser/browser.xhtml ('mainKeyset')
-/// for available VK codes, see C:\Program Files\Mozilla Firefox\browser\omni.ja/chrome\devtools\modules\devtools\client\shared\keycodes.js
+/// for available commands, see C:/Program Files/Mozilla Firefox/browser/omni.ja/chrome/browser/content/browser/browser.xhtml ('mainKeyset')
+/// for available VK codes, see C:/Program Files/Mozilla Firefox/browser/omni.ja/chrome/devtools/modules/devtools/client/shared/keycodes.js
 /// ==============================================================================================================================================
 function hotkeys(id, modifiers, key, command, oncommand) {
   const k = window.document.createXULElement("key"); k.id = id;
@@ -29,6 +29,10 @@ function hotkeys(id, modifiers, key, command, oncommand) {
 hotkeys("hot_library", "accel,shift", "VK_B", "Browser:ShowAllBookmarks", "");
 // Example 2: use B to toggle Bookmarks toolbar (set either command or oncommand like in browser.xhtml - here, command empty, oncommand set)
 hotkeys("hot_bookmtb", "", "B", "", "BookmarkingUI.toggleBookmarksToolbar('shortcut');");
+// Example 3: use Ctrl+Alt+Q instead of Ctrl+Shift+Q to prevent accidental quit
+let key_quit = document.getElementById("key_quitApplication"); if (key_quit) key_quit.setAttribute("modifiers", "accel,alt");
+// Example 4: remove quit application built-in shortcut
+let key_quit = document.getElementById("key_quitApplication"); if (key_quit) key_quit.remove();
 
 
 /***************************************************    PLACE CUSTOM CODE ABOVE THIS LINE!    ***************************************************/
