@@ -32,7 +32,7 @@ hotkeys("hot_bookmtb", "", "B", "", "BookmarkingUI.toggleBookmarksToolbar('short
 // Example 3: use Ctrl+Alt+Q instead of Ctrl+Shift+Q to prevent accidental quit
 let key_quit = document.getElementById("key_quitApplication"); if (key_quit) key_quit.setAttribute("modifiers", "accel,alt");
 // Example 4: remove quit application built-in shortcut
-let key_quit = document.getElementById("key_quitApplication"); if (key_quit) key_quit.remove();
+let key_quit_rem = document.getElementById("key_quitApplication"); if (key_quit_rem) key_quit.remove();
 
 
 /***************************************************    PLACE CUSTOM CODE ABOVE THIS LINE!    ***************************************************/
