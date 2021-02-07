@@ -1,58 +1,82 @@
-//// user.js tweaked preferences for Firefox by AveYo
-//// place in your profile root directory (see about:profiles) & run prefsCleaner from github /arkenfox/user.js
-//// must-have addons: uBlock Origin, LOCALCDN, ClearURLs, Never-Consent    + VPN users can add CanvasBlocker and set privacy.resistFingerprinting
-//// must-have search: searx.space - opensource aggregator with multiple instances
-//// 2021.01.04: Focus on safety, speed and reduced annoyances
+/// user.js tweaked preferences for Firefox by AveYo
+/// place in your profile root directory (see about:profiles) & run prefsCleaner from github /arkenfox/user.js
+/// must-have addons: uBlock Origin, LOCALCDN, ClearURLs, Never-Consent
+/// must-have search: searx.space - opensource aggregator with multiple instances
+/// changes: relaxed cross-origin to fix iframes like codepen, fix microsoft.catalog, fix whiteflash with dark theme on about:blank
+/// 2021.02.07: v85 focus on safety, speed and reduced annoyances - introducing Natural Smooth Scrolling, not stuttering when scrolling slowly
 
-////  ACCELERATED SMOOTH SCROLLING - now adjusted for migrationPercent 100                      Best to adjust only prefs having Fluid alternative
-user_pref("general.smoothScroll.scrollbars.durationMaxMS", 600);                           // x ASS [150]       Fluid: 500 - 800
-user_pref("general.smoothScroll.mouseWheel.durationMaxMS", 275);                           // x ASS [200]       Fluid: 250 - 500
-user_pref("general.smoothScroll.other.durationMaxMS", 150);                                // x ASS [150]       Fluid: 200 - 400
-user_pref("general.smoothScroll.pages.durationMaxMS", 150);                                // x ASS [150]       Fluid: 200 - 400
-user_pref("general.smoothScroll.lines.durationMaxMS", 150);                                // x ASS [150]       Fluid: 200 - 400
-user_pref("general.smoothScroll.pixels.durationMaxMS", 150);                               // x ASS [150]       Fluid: 200 - 400
-user_pref("mousewheel.min_line_scroll_amount", 12);                                        // x ASS [5]         Fluid:  12 - 24
-user_pref("toolkit.scrollbox.horizontalScrollDistance", 6);                                // x ASS [5]         Fluid:   3 - 12
-user_pref("toolkit.scrollbox.verticalScrollDistance", 6);                                  // x ASS [3]         Fluid:   3 - 12
-user_pref("mousewheel.acceleration.factor", 10);                                           // x ASS [10]        Fluid:   5 - 20
-user_pref("mousewheel.acceleration.start", 0);                                             // o ASS [-1]        Fluid:   0
-user_pref("mousewheel.default.delta_multiplier_x", 100);                                   // x ASS [100]
-user_pref("mousewheel.default.delta_multiplier_y", 100);                                   // x ASS [100]
-user_pref("mousewheel.default.delta_multiplier_z", 100);                                   // x ASS [100]
-user_pref("mousewheel.system_scroll_override_on_root_content.enabled", false);             // o ASS [true]
-user_pref("mousewheel.transaction.timeout", 2000);                                         // x ASS [1500]
-user_pref("general.smoothScroll.scrollbars.durationMinMS", 0);                             // o ASS [150]
-user_pref("general.smoothScroll.mouseWheel.durationMinMS", 0);                             // o ASS [50]
-user_pref("general.smoothScroll.other.durationMinMS", 0);                                  // o ASS [150]
-user_pref("general.smoothScroll.pages.durationMinMS", 0);                                  // o ASS [150]
-user_pref("general.smoothScroll.lines.durationMinMS", 0);                                  // o ASS [150]
-user_pref("general.smoothScroll.pixels.durationMinMS", 0);                                 // o ASS [150]
-user_pref("general.smoothScroll.currentVelocityWeighting", "0");                           // o ASS [0.25]
-user_pref("general.smoothScroll.stopDecelerationWeighting", "0.2");                        // x ASS [0.4]
-user_pref("general.smoothScroll.durationToIntervalRatio", 2000);                           // x ASS [200]
-user_pref("general.smoothScroll.msdPhysics.enabled", false);                               // o ASS [false]
-user_pref("general.smoothScroll.mouseWheel.migrationPercent", 100);                        // o ASS [100] A pesky perf screwing low-level handling
-user_pref("layers.async-pan-zoom.enabled", true);                                          // x ASS [true] reduces arrow scroll fps - awaiting fix
+////  NATURAL SMOOTH SCROLLING                                                                     preset [default]
+user_pref("mousewheel.acceleration.factor", 50);                                           // * NSS:  50    [10]   UNIFIED SPEED 1080p = 25 - 50
+user_pref("mousewheel.acceleration.start", 0);                                             // * NSS:   0    [-1]         smoother when slow
+user_pref("mousewheel.default.delta_multiplier_x", 20);                                    // * NSS:  25    [100]          vscroll multi
+user_pref("mousewheel.default.delta_multiplier_y", 20);                                    // * NSS:  25    [100]          vscroll multi
+user_pref("mousewheel.default.delta_multiplier_z", 20);                                    // * NSS:  25    [100]          vscroll multi
+user_pref("mousewheel.with_shift.delta_multiplier_x", 20);                                 // * NSS:  25    [100]          hscroll multi
+user_pref("mousewheel.with_shift.delta_multiplier_y", 20);                                 // * NSS:  25    [100]          hscroll multi
+user_pref("mousewheel.with_shift.delta_multiplier_z", 20);                                 // * NSS:  25    [100]          hscroll multi
+user_pref("mousewheel.with_control.delta_multiplier_x", 20);                               // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_control.delta_multiplier_y", 20);                               // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_control.delta_multiplier_z", 20);                               // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_meta.delta_multiplier_x", 20);                                  // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_meta.delta_multiplier_y", 20);                                  // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_meta.delta_multiplier_z", 20);                                  // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_alt.delta_multiplier_x", 10);                                   // * NSS:  10    [100]           other multi
+user_pref("mousewheel.with_alt.delta_multiplier_y", 10);                                   // * NSS:  10    [100]           other multi
+user_pref("mousewheel.with_alt.delta_multiplier_z", 10);                                   // * NSS:  10    [100]           other multi
+user_pref("mousewheel.with_win.delta_multiplier_x", 10);                                   // * NSS:  10    [100]           other multi
+user_pref("mousewheel.with_win.delta_multiplier_y", 10);                                   // * NSS:  10    [100]           other multi
+user_pref("mousewheel.with_win.delta_multiplier_z", 10);                                   // * NSS:  10    [100]           other multi
+user_pref("mousewheel.min_line_scroll_amount", 0);                                         // * NSS:   3     [5]       lines vary with accel.
+user_pref("mousewheel.system_scroll_override_on_root_content.enabled", false);             // * NSS: false [true]        ignoring sys accel.
+user_pref("mousewheel.transaction.timeout", 1500);                                         // * NSS: 1500  [1500]             unused
+user_pref("layers.async-pan-zoom.enabled", true);                                          // * NSS: true  [true]    SMOOTHNESS PERFORMANCE BOOST
+user_pref("apz.force_disable_desktop_zooming_scrollbars", true);                           // * NSS: true  [false]     KEYBOARD SCROLL FIX I
+user_pref("apz.paint_skipping.enabled", false);                                            // * NSS: false [true]      KEYBOARD SCROLL FIX II v85
+user_pref("layout.css.scroll-behavior.spring-constant", "275.0");                          // * NSS: "275"  [250]    css scroll mimics smoothness
+user_pref("toolkit.scrollbox.clickToScroll.scrollDelay", 150);                             // * NSS:  150   [150]             unused
+user_pref("toolkit.scrollbox.scrollIncrement", 20);                                        // * NSS:  20    [20]              unused
+user_pref("toolkit.scrollbox.horizontalScrollDistance", 3);                                // * NSS:   3     [5]      keyboard matching mwheel
+user_pref("toolkit.scrollbox.verticalScrollDistance", 3);                                  // * NSS:   3     [3]      keyboard matching mwheel
+user_pref("general.smoothScroll.currentVelocityWeighting", "0");                           // * NSS:  "0"  [0.25]         reduce stutters
+user_pref("general.smoothScroll.stopDecelerationWeighting", "0.1");                        // * NSS: "0.2"  [0.4]         reduce stutters
+user_pref("general.smoothScroll.durationToIntervalRatio", 1000);                           // * NSS: 2000   [200]         reduce stutters
+user_pref("general.smoothScroll.mouseWheel.migrationPercent", 100);                        // * NSS:  100   [100]     lame pref wreks settings
+user_pref("general.smoothScroll.msdPhysics.enabled", false);                               // * NSS: false [false]    no stutering physics fling
+user_pref("general.smoothScroll.mouseWheel.durationMaxMS", 275);                           // * NSS:  275   [200]      mwheel fine smoothing
+user_pref("general.smoothScroll.mouseWheel.durationMinMS", 0);                             // * NSS:   0    [50]          reduce stutters
+user_pref("general.smoothScroll.lines.durationMaxMS", 275);                                // * NSS:  275   [150]      arrows fine smoothing
+user_pref("general.smoothScroll.lines.durationMinMS", 0);                                  // * NSS:   0    [150]         reduce stutters
+user_pref("general.smoothScroll.other.durationMaxMS", 150);                                // * NSS:  150   [150]     home-end fine smoothing
+user_pref("general.smoothScroll.other.durationMinMS", 0);                                  // * NSS:   0    [150]        reduce stutters
+user_pref("general.smoothScroll.pages.durationMaxMS", 200);                                // * NSS:  200   [150]     pgup-pgdn fine smoothing
+user_pref("general.smoothScroll.pages.durationMinMS", 0);                                  // * NSS:   0    [150]         reduce stutters
+user_pref("general.smoothScroll.scrollbars.durationMaxMS", 500);                           // * NSS:  500   [150]     scrollbar fine smoothing
+user_pref("general.smoothScroll.scrollbars.durationMinMS", 0);                             // * NSS:   0    [150]        reduce stutters
+user_pref("general.smoothScroll.pixels.durationMaxMS", 150);                               // * NSS:  150   [150]     per-pixel fine smoothing
+user_pref("general.smoothScroll.pixels.durationMinMS", 0);                                 // * NSS:   0    [150]         reduce stutters
+
 
 //// GENERAL
 //user_pref("browser.altClickSave", true);                                                 // / ALT + click save target instead of 3x selects link
 user_pref("browser.backspace_action", 0);                                                  // o Pressing Backspace does not open previous page [0]
 user_pref("browser.bookmarks.editDialog.maxRecentFolders", 12);                            // x More recent folders in Bookmarks dialog [7]
 user_pref("browser.bookmarks.max_backups", 2);                                             // x Bookmarks backup copies reduced [15]
-user_pref("browser.bookmarks.openInTabClosesMenu", false);                                 // o close Bookmarks dialog after open in tab
+user_pref("browser.bookmarks.openInTabClosesMenu", false);                                 // o Close Bookmarks dialog after open in tab
 user_pref("browser.bookmarks.showMobileBookmarks", true);                                  // x Show Mobile Bookmarks folder
 user_pref("browser.bookmarks.showRecentlyBookmarked", true);                               // x Show Recent Bookmarks folder
-user_pref("browser.cache.offline.enable", false);                                          // o Offline cache
+user_pref("browser.cache.offline.enable", true);                                           // o Offline cache
 user_pref("browser.defaultbrowser.notificationbar", false);                                // o Default browser notification
 user_pref("browser.disableResetPrompt", true);                                             // x Prevent Reset Firefox prompt
+//user_pref("browser.display.background_color", "#fef9f4");                                // / Hardcode default backgrount color
+//user_pref("browser.display.foreground_color", "#26262a");                                // / Hardcode default text color
 user_pref("browser.download.autohideButton", false);                                       // o Hide Downloads button
 user_pref("browser.download.folderList", 2);                                               // x Save files to last used folder = 2 / downloads = 1
 user_pref("browser.download.hide_plugins_without_extensions", false);                      // o Allow applications (mime types) without a plugin
 user_pref("browser.download.manager.addToRecentDocs", false);                              // o Adding downloads to os recent documents list
 user_pref("browser.link.open_newwindow", 1);                                               // x Open new win link in most recent window or tab [3]
 user_pref("browser.link.open_newwindow.override.external", 3);                             // x Open external links in active window new tab [-1]
-user_pref("browser.link.open_newwindow.restriction", 0);                                   // o Divert links as in browser.link.open_newwindow [2]
-//user_pref("browser.newtabpage.enabled", false);                                          // / Default New Tab page as empty
+user_pref("browser.link.open_newwindow.restriction", 2);                                   // o Divert links = 0 would break microsoft.catalog [2]
+user_pref("browser.newtabpage.enabled", true);                                             // x Default New Tab page as empty or enabled
 user_pref("browser.pagethumbnails.capturing_disabled", true);                              // x Page thumbnail collection
 //user_pref("browser.region.network.url", "");                                             // / Clear region updates url
 //user_pref("browser.region.update.enabled", false);                                       // / Disable region updates - for localized search etc.
@@ -62,37 +86,42 @@ user_pref("browser.sessionstore.interval", 1800000);                            
 user_pref("browser.sessionstore.interval.idle", 3600000);                                  // x Save session to disk when idle every 60m [3600000]
 user_pref("browser.sessionstore.max_tabs_undo", 50);                                       // x History - Recently closed tabs count [25]
 user_pref("browser.shell.checkDefaultBrowser", false);                                     // o Always check if Firefox is your default browser
-user_pref("browser.slowStartup.notificationDisabled", true);                               // / Disable slow startup notification
-user_pref("browser.slowStartup.maxSamples", 0);                                            // o Slow startup max samples [5]
-user_pref("browser.slowStartup.samples", 0);                                               // o Slow startup min samples [2]
-//user_pref("browser.startup.homepage", "about:home");                                     // / Preset homepage about:home / about:blank / custom
-user_pref("browser.startup.homepage.abouthome_cache.enabled", true);                       // x Cache about:home to improve startup
+user_pref("browser.slowStartup.notificationDisabled", true);                               // x Slow startup notification
+user_pref("browser.slowStartup.maxSamples", 10);                                           // o Slow startup max samples [5]
+user_pref("browser.slowStartup.samples", 5);                                               // o Slow startup min samples [2]
+//user_pref("browser.startup.homepage", "about:blank");                                    // / Preset homepage about:home / about:blank / custom
+user_pref("browser.startup.homepage.abouthome_cache.enabled", false);                      // o Cache about:home at startup (can white flash)
 user_pref("browser.startup.homepage_override.mstone", "ignore");                           // x "Your Firefox is up to date" homepage override
-//user_pref("browser.startup.page", 1);                                                    // / Preset startup page - Home = 1 or Blank = 0
-//user_pref("browser.startup.blankWindow", false);                                         // / Show blank window early on (wih RFP on flickers)
-//user_pref("browser.startup.preXulSkeletonUI", false);                                    // / Show skeleton UI even before loading xul.dll
+//user_pref("browser.startup.page", 0);                                                    // / Startup page Blank = 0 (Home = 1 can white flash)
+user_pref("browser.startup.blankWindow", false);                                           // o Show blank window early (if true can white flash)
+user_pref("browser.startup.preXulSkeletonUI", false);                                      // o Show skeleton UI early (not needed with above 2)
 user_pref("browser.tabs.allowTabDetach", false);                                           // o Tab drag to detach in a new window
 user_pref("browser.tabs.closeWindowWithLastTab", false);                                   // o Close window with last tab - annoyance with Ctrl+W
 user_pref("browser.tabs.loadDivertedInBackground", true);                                  // x Open external links in background
 user_pref("browser.tabs.loadBookmarksInBackground", true);                                 // x Open bookmarks in background (on middle-click)
-user_pref("browser.tabs.tabMinWidth", 100);                                                // x Increase minimum tab width [76]
+user_pref("browser.tabs.tabMinWidth", 120);                                                // x Increase minimum tab width [76]
 user_pref("browser.tabs.warnOnClose", false);                                              // o Tab close warning
 user_pref("browser.tabs.warnOnCloseOtherTabs", false);                                     // o Multiple tabs close warning
 user_pref("browser.tabs.warnOnOpen", false);                                               // o Opening multiple tabs slowdown warning
 user_pref("browser.taskbar.lists.enabled", false);                                         // o Windows jumplist recent
 user_pref("browser.taskbar.lists.frequent.enabled", false);                                // o Windows jumplist frequent
 user_pref("browser.taskbar.lists.tasks.enabled", false);                                   // o Windows jumplist tasks
+user_pref("browser.toolbars.bookmarks.showOtherBookmarks", false);                         // o Other Bookmarks on toolbar - long awaited pref
+//user_pref("browser.toolbars.bookmarks.visibility", "always");                            // / Show bookmarks toolbar: newtab / always / never
 user_pref("browser.urlbar.clickSelectsAll", false);                                        // o Select all url on Click
+user_pref("browser.urlbar.ctrlCanonizesURLs", false);                                      // x Ctrl+Enter opens new tab instead of lame canonize
 user_pref("browser.urlbar.decodeURLsOnCopy", true);                                        // x Decode urlencoded link on copy
 user_pref("browser.urlbar.doubleClickSelectsAll", true);                                   // x Select all url on doubleClick
 user_pref("browser.urlbar.formatting.enabled", false);                                     // o Domain highlight that makes full url hard to read
+//user_pref("browser.urlbar.switchTabs.adoptIntoActiveWindow", true);                      // / Search in active tabs pulls tab from all windows
 user_pref("browser.urlbar.trimURLs", false);                                               // o Display all parts of the url in the urlbar
 user_pref("browser.urlbar.update2.engineAliasRefresh", true);                              // x Enable Add button in Search engines options
 user_pref("browser.xul.error_pages.expert_bad_cert", true);                                // x Display advanced info on Insecure Connection
 //user_pref("browser.zoom.siteSpecific", false);                                           // / Disable remembering zoom per site
+//user_pref("dom.confirm_repost.testing.always_accept", true);                             // / Hide confirm dialog when reloading a POST request
 user_pref("dom.disable_beforeunload", true);                                               // x Confirm you want to leave dialog on page close
 user_pref("dom.disable_window_move_resize", true);                                         // x Scripts moving and resizing open windows
-user_pref("dom.popup_allowed_events", "click dblclick");                                   // o Limit events that can cause a popup
+user_pref("dom.popup_allowed_events", "click dblclick");                                   // o Limit events causing a popup "click dblclick"
 user_pref("dom.user_activation.transient.timeout", 500);                                   // x Reduce activation timeout - Autoplay uses [5000]
 user_pref("dom.vibrator.enabled", false);                                                  // o Shaking the screen effect
 //user_pref("extensions.screenshots.disabled", true);                                      // / Disable Screenshots extension - why, though?
@@ -103,8 +132,8 @@ user_pref("full-screen-api.approval-required", false);                          
 //user_pref("full-screen-api.ignore-widgets", true);                                       // / Full-screen toggle does not maximize the window
 user_pref("full-screen-api.warning.delay", 0);                                             // o Full-screen warning disable [500]
 user_pref("full-screen-api.warning.timeout", 0);                                           // o Full-screen warning disable [3000]
-user_pref("full-screen-api.transition-duration.enter", "0 0");                             // o Full-screen HTML5 transition on entering [200 200]
-user_pref("full-screen-api.transition-duration.leave", "0 0");                             // o Full-screen HTML5 transition on leaving  [200 200]
+user_pref("full-screen-api.transition-duration.enter", "5 5");                             // o Full-screen HTML5 transition on entering [200 200]
+user_pref("full-screen-api.transition-duration.leave", "5 5");                             // o Full-screen HTML5 transition on leaving  [200 200]
 user_pref("image.animation_mode", "once");                                                 // / GIF loop once - improves perf a lot
 //user_pref("intl.accept_languages", "en-US, en");                                         // / Set preferred language for displaying web pages
 //user_pref("javascript.use_us_english_locale", true);                                     // / Enforce US English regardless of system locale
@@ -115,9 +144,9 @@ user_pref("mousewheel.with_shift.action", 4);                                   
 user_pref("media.memory_cache_max_size", 65536);                                           // x Increase media memory cache [8192]
 user_pref("nglayout.enable_drag_images", false);                                           // o Tab drag without preview
 user_pref("toolkit.winRegisterApplicationRestart", false);                                 // o Automatic reopen and session restore after reboot
-user_pref("ui.prefersReducedMotion", 1);                                                   // x Reduce UI animations [0]
+//user_pref("ui.prefersReducedMotion", 1);                                                 // / Reduce UI animations [0]
 //user_pref("ui.key.menuAccessKey", 0);                                                    // / Alt key does not toggle the menu bar
-//user_pref("ui.systemUsesDarkTheme", 1);                                                  // / Fake system dark theme - doesnt fix white flash :(
+//user_pref("ui.systemUsesDarkTheme", 1);                                                  // / Fake system dark theme
 
 //// PRIVACY
 user_pref("browser.contentblocking.category", "custom");                                   // x Enhanced Tracking Protection: custom
@@ -144,11 +173,10 @@ user_pref("layout.css.font-visibility.level", 2);                               
 user_pref("media.peerconnection.ice.default_address_only", true);                          // x Limit Google WebRTC IP leaks
 user_pref("media.peerconnection.ice.no_host", true);                                       // x Limit Google WebRTC IP leaks
 user_pref("media.peerconnection.ice.proxy_only_if_behind_proxy", true);                    // x limit Google WebRTC IP leaks
-user_pref("network.cookie.cookieBehavior", 4);                                             // x Block Cross-site and social media trackers [4]
+user_pref("network.cookie.cookieBehavior", 3);                                             // x Block Unvisited cookies 3 / Cross-site cookies [4]
 //user_pref("network.cookie.lifetimePolicy", 0);                                           // / Cookies and site data delete on close 2 / keep [0]
 user_pref("network.cookie.thirdparty.nonsecureSessionOnly", true);                         // x Third-party cookies current session if nonsecure
 user_pref("network.cookie.thirdparty.sessionOnly", false);                                 // o Third-party cookies current session all
-user_pref("plugin.state.flash", 0);                                                        // o Flash - override per-site via site permissions [1]
 user_pref("pref.privacy.disable_button.cookie_exceptions", false);                         // o Cookies exceptions
 user_pref("pref.privacy.disable_button.view_passwords_exceptions", false);                 // o View passwords exceptions
 user_pref("privacy.donottrackheader.enabled", true);                                       // x Send websites a Do Not Track signal
@@ -160,7 +188,6 @@ user_pref("privacy.trackingprotection.enabled", false);                         
 user_pref("privacy.trackingprotection.fingerprinting.enabled", false);                     // o Block known fingerprinters OR uBlock Origin
 user_pref("privacy.trackingprotection.pbmode.enabled", false);                             // o Block Tracking in Private browse OR uBlock Origin
 user_pref("privacy.userContext.longPressBehaviour", true);                                 // x Long pressing new tab button shows Containers menu
-user_pref("privacy.userContext.ui.enabled", true);                                         // x Enable Container Tabs choice in Options
 //user_pref("webgl.disabled", true);                                                       // / WebGL high entropy,  breaks browser games if off
 //user_pref("webgl.disable-fail-if-major-performance-caveat", true);                       // / WebGL do not auto-disable when low on resources
 //user_pref("webgl.enable-debug-renderer-info", false);                                    // / WebGL debug info OR CanvasBlocker
@@ -172,14 +199,14 @@ user_pref("privacy.userContext.ui.enabled", true);                              
 user_pref("accessibility.force_disabled", 1);                                              // x External accessibility services interactions [0]
 user_pref("browser.fixup.alternate.enabled", false);                                       // o Location urlbar exploitable domain guessing
 user_pref("browser.safebrowsing.allowOverride", true);                                     // x SafeBrowsing allows bypassing by user
-//user_pref("browser.safebrowsing.blockedURIs.enabled", false);                            // / Block urls via Google rep OR uBlock Origin
-//user_pref("browser.safebrowsing.downloads.enabled", false);                              // / Block downloads via Google rep OR uBlock Origin
+user_pref("browser.safebrowsing.blockedURIs.enabled", false);                              // o Block urls via Google rep OR uBlock Origin
+user_pref("browser.safebrowsing.downloads.enabled", false);                                // o Block downloads via Google rep OR uBlock Origin
 user_pref("browser.safebrowsing.downloads.remote.block_uncommon", false);                  // o Block everything unsigned - 90's style dumb system
 user_pref("browser.safebrowsing.downloads.remote.enabled", false);                         // o Dynamic lookup file hashes on Google's rep server
 user_pref("browser.safebrowsing.malware.enabled", false);                                  // o Block Malware domains list OR uBlock Origin
 user_pref("browser.safebrowsing.phishing.enabled", false);                                 // o Block Phishing domains list OR uBlock Origin
 user_pref("browser.launcherProcess.enabled", true);                                        // x Block DLL Injections from antivirus & third-party
-user_pref("browser.ssl_override_behavior", 1);                                             // x SSL Add Security Exception pre-populated url [2]
+user_pref("browser.ssl_override_behavior", 2);                                             // x SSL Add Security Exception pre-populated url [2]
 user_pref("browser.urlbar.dnsResolveSingleWordsAfterSearch", 0);                           // o DNS resolve single words after urlbar search [1]
 //user_pref("dom.security.https_only_mode", false);                                        // x HTTPS-Only mode
 user_pref("network.IDN_show_punycode", true);                                              // x Punycode for Int Domain Names anti-spoofing
@@ -195,7 +222,7 @@ user_pref("network.http.altsvc.oe", false);                                     
 user_pref("network.http.http3.enabled", true);                                             // x Enable HTTP3
 user_pref("network.http.redirection-limit", 10);                                           // x HTTP redirects (except HTML meta tags or JS) [20]
 user_pref("network.http.referer.spoofSource", false);                                      // o Referer spoof - breaks sites
-user_pref("network.http.referer.XOriginPolicy", 1);                                        // x Referer cross origin if base domains match [0]
+user_pref("network.http.referer.XOriginPolicy", 0);                                        // x Referer cross origin (1 breaks codepen) [0]
 user_pref("network.http.referer.XOriginTrimmingPolicy", 1);                                // x Don't sent full URI cross origin [0]
 user_pref("network.http.speculative-parallel-limit", 0);                                   // o Link-mouseover open connection to link server [6]
 user_pref("network.manage-offline-status", false);                                         // o Guess whether you are offline
@@ -213,7 +240,7 @@ user_pref("security.disable_button.openCertManager", false);                    
 //user_pref("security.external_protocol_requires_permission", false);                      // / v84 per-site confirm open protocol: magnet zoommtg
 user_pref("security.family_safety.mode", 0);                                               // x Don't allow MitM by Microsoft Family Safety [2]
 user_pref("security.insecure_connection_icon.enabled", true);                              // x Display "insecure" icon on HTTP sites
-user_pref("security.mixed_content.block_object_subrequest", true);                         // x Block unencrypted Flash requests on encrypted page
+user_pref("security.mixed_content.block_object_subrequest", true);                         // x Block unencrypted object request on encrypted page
 user_pref("security.osclientcerts.autoload", true);                                        // x Use client certificates from the operating system
 user_pref("security.pki.sha1_enforcement_level", 1);                                       // x SHA-1 certificates deprecated [3]
 user_pref("security.ssl.disable_session_identifiers", true);                               // x Disable SSL session tracking
@@ -247,8 +274,9 @@ user_pref("datareporting.healthreport.service.enabled", false);                 
 user_pref("datareporting.healthreport.uploadEnabled", false);                              // o Health report upload to mozilla
 user_pref("datareporting.policy.dataSubmissionEnabled", false);                            // o Data submission uploads master toggle
 user_pref("default-browser-agent.enabled", false);                                         // o Default browser agent telemetry
-user_pref("dom.ipc.plugins.flash.subprocess.crashreporter.enabled", false);                // o Sending Flash crash reports
+user_pref("dom.about_newtab_sanitization.enabled", true);                                  // x Sanitize remote snippets in New Tab page
 user_pref("dom.ipc.plugins.reportCrashURL", false);                                        // o Sending website URL where a plugin crashed
+user_pref("dom.security.unexpected_system_load_telemetry_enabled", false);                 // o System load telemetry
 user_pref("messaging-system.rsexperimentloader.enabled", false);                           // o New feature experiments
 user_pref("toolkit.coverage.enabled", false);                                              // o Percent of users adopting feature x estimations
 user_pref("toolkit.coverage.opt-out", true);                                               // x Percent of users adopting feature x estimations
@@ -315,14 +343,14 @@ user_pref("browser.newtabpage.activity-stream.section.highlights.includePocket",
 user_pref("browser.newtabpage.activity-stream.showSearch", false);                         // o Search pane -superfluous,  use urlbar instead
 user_pref("browser.newtabpage.activity-stream.showSponsored", false);                      // o Sponsored content
 user_pref("browser.newtabpage.activity-stream.showSponsoredTopSites", false);              // o Sponsored Top Sites
-user_pref("browser.search.suggest.enabled", false);                                        // o Search suggestions master toggle
+user_pref("browser.search.suggest.enabled", true);                                         // o Search suggestions master toggle
 user_pref("browser.search.update", true);                                                  // o Search engine updates - ebay needs an update atm
 user_pref("browser.uitour.enabled", false);                                                // o Firefox Tour
 user_pref("browser.urlbar.autoFill", false);                                               // x Disable urlbar autofill with domain extension
 user_pref("browser.urlbar.speculativeConnect.enabled", false);                             // o Speculative connections from urlbar
 user_pref("browser.urlbar.suggest.searches", false);                                       // o Previous searches suggestions
-user_pref("browser.urlbar.suggest.engines", true);                                         // x Search engines in the urlbar (tab2search)
-user_pref("browser.urlbar.update2.oneOffsRefresh", false);                                 // o Search in alternative engine v83 new annoyance
+user_pref("browser.urlbar.suggest.engines", false);                                        // o Search engines in the urlbar (tab2search)
+//user_pref("browser.urlbar.update2.oneOffsRefresh", false);                               // o Search in alternative engine v83 new annoyance
 user_pref("extensions.getAddons.showPane", false);                                         // o Get Add-ons recommendations
 user_pref("extensions.htmlaboutaddons.recommendations.enabled", false);                    // o Html about:addons recommendations
 user_pref("extensions.pocket.enabled", false);                                             // o Pocket extension
@@ -339,9 +367,16 @@ user_pref("app.update.silent", false);                                          
 
 //// DEVELOPER
 user_pref("browser.aboutConfig.showWarning", false);                                       // o Do not show about:config warning
-user_pref("devtools.aboutdebugging.showSystemAddons", true);                               // x Display system addons in about:debugging
-user_pref("devtools.chrome.enabled", true);                                                // x Browser chrome and add-on - Ctrl+Shift+J input
+//user_pref("devtools.aboutdebugging.showSystemAddons", true);                             // x Display system addons in about:debugging
+//user_pref("devtools.chrome.enabled", true);                                              // x Browser chrome and add-on - Ctrl+Shift+J input
 //user_pref("devtools.debugger.remote-enabled", true);                                     // / Browser Toolbox - Ctrl+Alt+Shift+I
 user_pref("devtools.inspector.compatibility.enabled", true);                               // x Add inspector sidebar panel for the webcompat tool
+//user_pref("dom.send_after_paint_to_content", true);                                      // / Send MozAfterPaint event to web content as well
 user_pref("general.warnOnAboutConfig", false);                                             // o Display about:config normally without a warning
+//user_pref("gfx.webrender.all", true);                                                    // / Full Webrender (bypasses driver blacklists)
+//user_pref("gfx.webrender.debug.profiler", true);                                         // / Enable Webrender profiler
+user_pref("gfx.webrender.debug.profiler-ui", "FPS");                                       // / Webrender profiler = FPS overlay
+user_pref("svg.context-properties.content.enabled", true);                                 // x SVG context properties - for css inline icons
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);                    // x profile\chrome\ userChrome.css and userContent.css
+
+//user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"nav-bar\":[\"zoom-controls\",\"customizableui-special-spring66\",\"back-button\",\"forward-button\",\"stop-reload-button\",\"home-button\",\"sidebar-button\",\"bookmarks-menu-button\",\"history-panelmenu\",\"urlbar-container\",\"downloads-button\",\"library-button\",\"ublock0_raymondhill_net-browser-action\",\"_b86e4813-687a-43e6-ab65-0bde4ab75758_-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\",\"firefoxcolor_mozilla_com-browser-action\",\"customizableui-special-spring62\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"alltabs-button\",\"tabbrowser-tabs\",\"new-tab-button\"],\"PersonalToolbar\":[\"personal-bookmarks\"]},\"seen\":[\"developer-button\",\"bypasspaywalls_bypasspaywalls_weebly_com-browser-action\",\"_007e5327-f1ba-433d-aead-41cab2b7afb1_-browser-action\",\"_816c90e6-757f-4453-a84f-362ff989f3e2_-browser-action\",\"jid1-tsgsxbhncspbwq_jetpack-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\",\"_b86e4813-687a-43e6-ab65-0bde4ab75758_-browser-action\",\"firefoxcolor_mozilla_com-browser-action\"],\"dirtyAreaCache\":[\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\",\"PersonalToolbar\"],\"currentVersion\":16,\"newElementCount\":73}");
