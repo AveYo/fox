@@ -6,20 +6,20 @@
 /// 2021.02.07: v85 focus on safety, speed and reduced annoyances - introducing Natural Smooth Scrolling, not stuttering when scrolling slowly
 
 ////  NATURAL SMOOTH SCROLLING                                                                     preset [default]
-user_pref("mousewheel.acceleration.factor", 50);                                           // * NSS:  50    [10]   UNIFIED SPEED 1080p = 25 - 50
+user_pref("mousewheel.acceleration.factor", 40);                                           // * NSS:  40    [10]   UNIFIED SPEED 1080p = 20 - 40
 user_pref("mousewheel.acceleration.start", 0);                                             // * NSS:   0    [-1]         smoother when slow
-user_pref("mousewheel.default.delta_multiplier_x", 20);                                    // * NSS:  25    [100]          vscroll multi
-user_pref("mousewheel.default.delta_multiplier_y", 20);                                    // * NSS:  25    [100]          vscroll multi
-user_pref("mousewheel.default.delta_multiplier_z", 20);                                    // * NSS:  25    [100]          vscroll multi
-user_pref("mousewheel.with_shift.delta_multiplier_x", 20);                                 // * NSS:  25    [100]          hscroll multi
-user_pref("mousewheel.with_shift.delta_multiplier_y", 20);                                 // * NSS:  25    [100]          hscroll multi
-user_pref("mousewheel.with_shift.delta_multiplier_z", 20);                                 // * NSS:  25    [100]          hscroll multi
-user_pref("mousewheel.with_control.delta_multiplier_x", 20);                               // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_control.delta_multiplier_y", 20);                               // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_control.delta_multiplier_z", 20);                               // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_meta.delta_multiplier_x", 20);                                  // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_meta.delta_multiplier_y", 20);                                  // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_meta.delta_multiplier_z", 20);                                  // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.default.delta_multiplier_x", 25);                                    // * NSS:  25    [100]          vscroll multi
+user_pref("mousewheel.default.delta_multiplier_y", 25);                                    // * NSS:  25    [100]          vscroll multi
+user_pref("mousewheel.default.delta_multiplier_z", 25);                                    // * NSS:  25    [100]          vscroll multi
+user_pref("mousewheel.with_shift.delta_multiplier_x", 25);                                 // * NSS:  25    [100]          hscroll multi
+user_pref("mousewheel.with_shift.delta_multiplier_y", 25);                                 // * NSS:  25    [100]          hscroll multi
+user_pref("mousewheel.with_shift.delta_multiplier_z", 25);                                 // * NSS:  25    [100]          hscroll multi
+user_pref("mousewheel.with_control.delta_multiplier_x", 25);                               // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_control.delta_multiplier_y", 25);                               // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_control.delta_multiplier_z", 25);                               // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_meta.delta_multiplier_x", 25);                                  // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_meta.delta_multiplier_y", 25);                                  // * NSS:  25    [100]           zoom multi
+user_pref("mousewheel.with_meta.delta_multiplier_z", 25);                                  // * NSS:  25    [100]           zoom multi
 user_pref("mousewheel.with_alt.delta_multiplier_x", 10);                                   // * NSS:  10    [100]           other multi
 user_pref("mousewheel.with_alt.delta_multiplier_y", 10);                                   // * NSS:  10    [100]           other multi
 user_pref("mousewheel.with_alt.delta_multiplier_z", 10);                                   // * NSS:  10    [100]           other multi
@@ -39,7 +39,7 @@ user_pref("toolkit.scrollbox.horizontalScrollDistance", 3);                     
 user_pref("toolkit.scrollbox.verticalScrollDistance", 3);                                  // * NSS:   3     [3]      keyboard matching mwheel
 user_pref("general.smoothScroll.currentVelocityWeighting", "0");                           // * NSS:  "0"  [0.25]         reduce stutters
 user_pref("general.smoothScroll.stopDecelerationWeighting", "0.1");                        // * NSS: "0.2"  [0.4]         reduce stutters
-user_pref("general.smoothScroll.durationToIntervalRatio", 1000);                           // * NSS: 2000   [200]         reduce stutters
+user_pref("general.smoothScroll.durationToIntervalRatio", 1000);                           // * NSS: 1000   [200]         reduce stutters
 user_pref("general.smoothScroll.mouseWheel.migrationPercent", 100);                        // * NSS:  100   [100]     lame pref wreks settings
 user_pref("general.smoothScroll.msdPhysics.enabled", false);                               // * NSS: false [false]    no stutering physics fling
 user_pref("general.smoothScroll.mouseWheel.durationMaxMS", 275);                           // * NSS:  275   [200]      mwheel fine smoothing
