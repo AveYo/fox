@@ -6,54 +6,39 @@
 /// 2021.02.07: v85 focus on safety, speed and reduced annoyances - introducing Natural Smooth Scrolling, not stuttering when scrolling slowly
 
 ////  NATURAL SMOOTH SCROLLING                                                                     preset [default]
-user_pref("mousewheel.acceleration.factor", 40);                                           // * NSS:  40    [10]   UNIFIED SPEED 1080p = 20 - 40
-user_pref("mousewheel.acceleration.start", 0);                                             // * NSS:   0    [-1]         smoother when slow
-user_pref("mousewheel.default.delta_multiplier_x", 25);                                    // * NSS:  25    [100]          vscroll multi
-user_pref("mousewheel.default.delta_multiplier_y", 25);                                    // * NSS:  25    [100]          vscroll multi
-user_pref("mousewheel.default.delta_multiplier_z", 25);                                    // * NSS:  25    [100]          vscroll multi
-user_pref("mousewheel.with_shift.delta_multiplier_x", 25);                                 // * NSS:  25    [100]          hscroll multi
-user_pref("mousewheel.with_shift.delta_multiplier_y", 25);                                 // * NSS:  25    [100]          hscroll multi
-user_pref("mousewheel.with_shift.delta_multiplier_z", 25);                                 // * NSS:  25    [100]          hscroll multi
-user_pref("mousewheel.with_control.delta_multiplier_x", 25);                               // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_control.delta_multiplier_y", 25);                               // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_control.delta_multiplier_z", 25);                               // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_meta.delta_multiplier_x", 25);                                  // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_meta.delta_multiplier_y", 25);                                  // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_meta.delta_multiplier_z", 25);                                  // * NSS:  25    [100]           zoom multi
-user_pref("mousewheel.with_alt.delta_multiplier_x", 10);                                   // * NSS:  10    [100]           other multi
-user_pref("mousewheel.with_alt.delta_multiplier_y", 10);                                   // * NSS:  10    [100]           other multi
-user_pref("mousewheel.with_alt.delta_multiplier_z", 10);                                   // * NSS:  10    [100]           other multi
-user_pref("mousewheel.with_win.delta_multiplier_x", 10);                                   // * NSS:  10    [100]           other multi
-user_pref("mousewheel.with_win.delta_multiplier_y", 10);                                   // * NSS:  10    [100]           other multi
-user_pref("mousewheel.with_win.delta_multiplier_z", 10);                                   // * NSS:  10    [100]           other multi
-user_pref("mousewheel.min_line_scroll_amount", 0);                                         // * NSS:   3     [5]       lines vary with accel.
-user_pref("mousewheel.system_scroll_override_on_root_content.enabled", false);             // * NSS: false [true]        ignoring sys accel.
-user_pref("mousewheel.transaction.timeout", 1500);                                         // * NSS: 1500  [1500]             unused
-user_pref("layers.async-pan-zoom.enabled", true);                                          // * NSS: true  [true]    SMOOTHNESS PERFORMANCE BOOST
-user_pref("apz.force_disable_desktop_zooming_scrollbars", true);                           // * NSS: true  [false]     KEYBOARD SCROLL FIX I
-user_pref("apz.paint_skipping.enabled", false);                                            // * NSS: false [true]      KEYBOARD SCROLL FIX II v85
-user_pref("layout.css.scroll-behavior.spring-constant", "275.0");                          // * NSS: "275"  [250]    css scroll mimics smoothness
-user_pref("toolkit.scrollbox.clickToScroll.scrollDelay", 150);                             // * NSS:  150   [150]             unused
-user_pref("toolkit.scrollbox.scrollIncrement", 20);                                        // * NSS:  20    [20]              unused
-user_pref("toolkit.scrollbox.horizontalScrollDistance", 3);                                // * NSS:   3     [5]      keyboard matching mwheel
-user_pref("toolkit.scrollbox.verticalScrollDistance", 3);                                  // * NSS:   3     [3]      keyboard matching mwheel
-user_pref("general.smoothScroll.currentVelocityWeighting", "0");                           // * NSS:  "0"  [0.25]         reduce stutters
-user_pref("general.smoothScroll.stopDecelerationWeighting", "0.1");                        // * NSS: "0.2"  [0.4]         reduce stutters
-user_pref("general.smoothScroll.durationToIntervalRatio", 1000);                           // * NSS: 1000   [200]         reduce stutters
-user_pref("general.smoothScroll.mouseWheel.migrationPercent", 100);                        // * NSS:  100   [100]     lame pref wreks settings
-user_pref("general.smoothScroll.msdPhysics.enabled", false);                               // * NSS: false [false]    no stutering physics fling
-user_pref("general.smoothScroll.mouseWheel.durationMaxMS", 275);                           // * NSS:  275   [200]      mwheel fine smoothing
-user_pref("general.smoothScroll.mouseWheel.durationMinMS", 0);                             // * NSS:   0    [50]          reduce stutters
-user_pref("general.smoothScroll.lines.durationMaxMS", 275);                                // * NSS:  275   [150]      arrows fine smoothing
-user_pref("general.smoothScroll.lines.durationMinMS", 0);                                  // * NSS:   0    [150]         reduce stutters
-user_pref("general.smoothScroll.other.durationMaxMS", 150);                                // * NSS:  150   [150]     home-end fine smoothing
-user_pref("general.smoothScroll.other.durationMinMS", 0);                                  // * NSS:   0    [150]        reduce stutters
-user_pref("general.smoothScroll.pages.durationMaxMS", 200);                                // * NSS:  200   [150]     pgup-pgdn fine smoothing
-user_pref("general.smoothScroll.pages.durationMinMS", 0);                                  // * NSS:   0    [150]         reduce stutters
-user_pref("general.smoothScroll.scrollbars.durationMaxMS", 500);                           // * NSS:  500   [150]     scrollbar fine smoothing
-user_pref("general.smoothScroll.scrollbars.durationMinMS", 0);                             // * NSS:   0    [150]        reduce stutters
-user_pref("general.smoothScroll.pixels.durationMaxMS", 150);                               // * NSS:  150   [150]     per-pixel fine smoothing
-user_pref("general.smoothScroll.pixels.durationMinMS", 0);                                 // * NSS:   0    [150]         reduce stutters
+user_pref("mousewheel.acceleration.factor", 10);                                           // * NSS:  10    [10]         accel max speed
+user_pref("mousewheel.acceleration.start", 4);                                             // * NSS:   4   [-1]       accel after x ticks
+user_pref("mousewheel.default.delta_multiplier_x", 100);                                   // * NSS:  25    [100]          unused now
+user_pref("mousewheel.default.delta_multiplier_y", 100);                                   // * NSS:  25    [100]          unused now
+user_pref("mousewheel.default.delta_multiplier_z", 100);                                   // * NSS:  25    [100]          unused now
+user_pref("mousewheel.min_line_scroll_amount", 3);                                         // * NSS:   3     [5]      lines vary with accel
+user_pref("mousewheel.system_scroll_override_on_root_content.enabled", false);             // * NSS: false [true]       ignoring sys accel
+user_pref("mousewheel.transaction.timeout", 1500);                                         // * NSS: 1500  [1500]          unused now
+user_pref("layers.async-pan-zoom.enabled", true);                                          // * NSS: true  [true]       smoothness boost
+user_pref("apz.force_disable_desktop_zooming_scrollbars", true);                           // * NSS: true  [false]     keyboard scroll fix I
+user_pref("apz.paint_skipping.enabled", false);                                            // * NSS: false [true]    keyboard scroll fix II v85
+user_pref("layout.css.scroll-behavior.spring-constant", "275.0");                          // * NSS: "275"  [250]     css mimics smoothness
+user_pref("toolkit.scrollbox.clickToScroll.scrollDelay", 150);                             // * NSS:  150   [150]          unused now
+user_pref("toolkit.scrollbox.scrollIncrement", 20);                                        // * NSS:  20    [20]           unused now
+user_pref("toolkit.scrollbox.horizontalScrollDistance", 3);                                // * NSS:   3     [5]     keyboard matches mwheel
+user_pref("toolkit.scrollbox.verticalScrollDistance", 3);                                  // * NSS:   3     [3]     keyboard matches mwheel
+user_pref("general.smoothScroll.currentVelocityWeighting", "0");                           // * NSS:  "0"  [0.25]        reduce stutters
+user_pref("general.smoothScroll.stopDecelerationWeighting", "0.1");                        // * NSS: "0.2"  [0.4]        reduce stutters
+user_pref("general.smoothScroll.durationToIntervalRatio", 1000);                           // * NSS: 1000   [200]        reduce stutters
+user_pref("general.smoothScroll.mouseWheel.migrationPercent", 100);                        // * NSS:  100   [100]    lame pref wreks settings
+user_pref("general.smoothScroll.msdPhysics.enabled", false);                               // * NSS: false [false]      no stutering fling
+user_pref("general.smoothScroll.mouseWheel.durationMaxMS", 275);                           // * NSS:  275   [200]        mwheel smoothing
+user_pref("general.smoothScroll.mouseWheel.durationMinMS", 275);                           // * NSS:  275   [50]         mwheel smoothing
+user_pref("general.smoothScroll.lines.durationMaxMS", 275);                                // * NSS:  275   [150]        arrows smoothing
+user_pref("general.smoothScroll.lines.durationMinMS", 275);                                // * NSS:  275   [150]        arrows smoothing
+user_pref("general.smoothScroll.other.durationMaxMS", 150);                                // * NSS:  150   [150]       home-end smoothing
+user_pref("general.smoothScroll.other.durationMinMS", 150);                                // * NSS:  150   [150]       home-end smoothing
+user_pref("general.smoothScroll.pages.durationMaxMS", 200);                                // * NSS:  200   [150]       pgup-pgdn smoothing
+user_pref("general.smoothScroll.pages.durationMinMS", 200);                                // * NSS:  200   [150]       pgup-pgdn smoothing
+user_pref("general.smoothScroll.scrollbars.durationMaxMS", 500);                           // * NSS:  500   [150]       scrollbar smoothing
+user_pref("general.smoothScroll.scrollbars.durationMinMS", 500);                           // * NSS:  500   [150]       scrollbar smoothing
+user_pref("general.smoothScroll.pixels.durationMaxMS", 150);                               // * NSS:  150   [150]       per-pixel smoothing
+user_pref("general.smoothScroll.pixels.durationMinMS", 150);                               // * NSS:  150   [150]       per-pixel smoothing
 
 
 //// GENERAL
