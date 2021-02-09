@@ -2,41 +2,42 @@
 /// place in your profile root directory (see about:profiles) & run prefsCleaner from github /arkenfox/user.js
 /// must-have addons: uBlock Origin, LOCALCDN, ClearURLs, Never-Consent
 /// must-have search: searx.space - opensource aggregator with multiple instances
-/// changes: relaxed cross-origin to fix iframes like codepen, fix microsoft.catalog, fix whiteflash with dark theme on about:blank
-/// 2021.02.07: v85 focus on safety, speed and reduced annoyances - introducing Natural Smooth Scrolling, not stuttering when scrolling slowly
+/// changes: relaxed cross-origin to fix iframes like codepen, fix microsoft.catalog, fix whiteflash on about:blank, html5 fullscr min fading
+/// 2021.02.09: focus on safety, speed and reduced annoyances - introducing Natural Smooth Scrolling, not stuttering when scrolling slowly
 
-////  NATURAL SMOOTH SCROLLING                                                                     preset            info                [default]
-user_pref("mousewheel.acceleration.factor", 10);                                           // NSS    10         accel max speed               [10]
+////  NATURAL SMOOTH SCROLLING                                                                     preset             info               [default]
+user_pref("mousewheel.acceleration.factor", 5);                                            // NSS     5        ACCEL MAX SPEED 1-20           [10]
 user_pref("mousewheel.acceleration.start", 4);                                             // NSS     4        accel after x ticks            [-1]
-user_pref("mousewheel.default.delta_multiplier_x", 100);                                   // NSS   100          reset previous              [100]
-user_pref("mousewheel.default.delta_multiplier_y", 100);                                   // NSS   100          reset previous              [100]
-user_pref("mousewheel.default.delta_multiplier_z", 100);                                   // NSS   100          reset previous              [100]
-user_pref("mousewheel.min_line_scroll_amount", 3);                                         // NSS     3      lines vary with accel             [5]
+user_pref("mousewheel.default.delta_multiplier_x", 100);                                   // NSS   100           reset previous             [100]
+user_pref("mousewheel.default.delta_multiplier_y", 100);                                   // NSS   100           reset previous             [100]
+user_pref("mousewheel.default.delta_multiplier_z", 100);                                   // NSS   100           reset previous             [100]
 user_pref("mousewheel.system_scroll_override_on_root_content.enabled", false);             // NSS  false       ignoring sys accel           [true]
-user_pref("mousewheel.transaction.timeout", 1500);                                         // NSS  1500          reset previous             [1500]
-user_pref("layers.async-pan-zoom.enabled", true);                                          // NSS  true         smoothness boost            [true]
-user_pref("apz.force_disable_desktop_zooming_scrollbars", true);                           // NSS  true          keyboard fix I            [false]
-user_pref("apz.paint_skipping.enabled", false);                                            // NSS  false         keyboard fix II v85        [true]
-user_pref("layout.css.scroll-behavior.spring-constant", "275.0");                          // NSS  "275"      css mimics gecko scroll        [250]
+user_pref("mousewheel.transaction.timeout", 1500);                                         // NSS  1500           reset previous            [1500]
+user_pref("mousewheel.min_line_scroll_amount", 0);                                         // NSS     0       lines vary with accel            [5]
 user_pref("toolkit.scrollbox.horizontalScrollDistance", 3);                                // NSS     3       keyboard matches mwheel          [5]
 user_pref("toolkit.scrollbox.verticalScrollDistance", 3);                                  // NSS     3       keyboard matches mwheel          [3]
-user_pref("general.smoothScroll.currentVelocityWeighting", "0");                           // NSS    "0"          reduce stutter            [0.25]
-user_pref("general.smoothScroll.stopDecelerationWeighting", "0.05");                       // NSS "0.05"          reduce stutter             [0.4]
-user_pref("general.smoothScroll.durationToIntervalRatio", 1000);                           // NSS  1000           reduce stutter             [200]
+user_pref("layers.async-pan-zoom.enabled", true);                                          // NSS  true          smoothness boost           [true]
+user_pref("apz.force_disable_desktop_zooming_scrollbars", true);                           // NSS  true          keyboard fix I            [false]
+user_pref("apz.paint_skipping.enabled", false);                                            // NSS  false         keyboard fix II v85        [true]
+user_pref("dom.event.wheel-deltaMode-lines.always-disabled", true);                        // NSS  true       report wheel in pixels       [false]
+user_pref("layout.css.scroll-behavior.spring-constant", "300.0");                          // NSS  "300"      css mimics gecko scroll        [250]
 user_pref("general.smoothScroll.mouseWheel.migrationPercent", 100);                        // NSS   100      lame pref wreks settings        [100]
 user_pref("general.smoothScroll.msdPhysics.enabled", false);                               // NSS  false        no stutering fling         [false]
-user_pref("general.smoothScroll.mouseWheel.durationMaxMS", 275);                           // NSS   275          mwheel smoothing            [200]
-user_pref("general.smoothScroll.mouseWheel.durationMinMS", 275);                           // NSS   275          mwheel smoothing             [50]
-user_pref("general.smoothScroll.lines.durationMaxMS", 275);                                // NSS   275          arrows smoothing            [150]
-user_pref("general.smoothScroll.lines.durationMinMS", 275);                                // NSS   275          arrows smoothing            [150]
+user_pref("general.smoothScroll.currentVelocityWeighting", "0.0");                         // NSS  "0.0"          reduce stutter            [0.25]
+user_pref("general.smoothScroll.durationToIntervalRatio", 400);                            // NSS   400           reduce stutter             [200]
+user_pref("general.smoothScroll.stopDecelerationWeighting", "0.0");                        // NSS  "0.0"          reduce stutter             [0.4]
+user_pref("general.smoothScroll.lines.durationMaxMS", 300);                                // NSS   300          arrows smoothing            [150]
+user_pref("general.smoothScroll.lines.durationMinMS", 300);                                // NSS   300          arrows smoothing            [150]
+user_pref("general.smoothScroll.mouseWheel.durationMaxMS", 300);                           // NSS   300          mwheel smoothing            [200]
+user_pref("general.smoothScroll.mouseWheel.durationMinMS", 300);                           // NSS   300          mwheel smoothing             [50]
 user_pref("general.smoothScroll.other.durationMaxMS", 150);                                // NSS   150          home-end smoothing          [150]
 user_pref("general.smoothScroll.other.durationMinMS", 150);                                // NSS   150          home-end smoothing          [150]
 user_pref("general.smoothScroll.pages.durationMaxMS", 200);                                // NSS   200         pgup-pgdn smoothing          [150]
 user_pref("general.smoothScroll.pages.durationMinMS", 200);                                // NSS   200         pgup-pgdn smoothing          [150]
+user_pref("general.smoothScroll.pixels.durationMaxMS", 300);                               // NSS   300           pixel smoothing            [150]
+user_pref("general.smoothScroll.pixels.durationMinMS", 300);                               // NSS   300           pixel smoothing            [150]
 user_pref("general.smoothScroll.scrollbars.durationMaxMS", 500);                           // NSS   500         scrollbar smoothing          [150]
 user_pref("general.smoothScroll.scrollbars.durationMinMS", 500);                           // NSS   500         scrollbar smoothing          [150]
-user_pref("general.smoothScroll.pixels.durationMaxMS", 150);                               // NSS   150         per-pixel smoothing          [150]
-user_pref("general.smoothScroll.pixels.durationMinMS", 150);                               // NSS   150         per-pixel smoothing          [150]
 
 
 //// GENERAL
@@ -115,8 +116,9 @@ user_pref("full-screen-api.approval-required", false);                          
 //user_pref("full-screen-api.ignore-widgets", true);                                       // / Full-screen toggle does not maximize the window
 user_pref("full-screen-api.warning.delay", 0);                                             // o Full-screen warning disable [500]
 user_pref("full-screen-api.warning.timeout", 0);                                           // o Full-screen warning disable [3000]
-user_pref("full-screen-api.transition-duration.enter", "5 5");                             // o Full-screen HTML5 transition on entering [200 200]
-user_pref("full-screen-api.transition-duration.leave", "5 5");                             // o Full-screen HTML5 transition on leaving  [200 200]
+user_pref("full-screen-api.transition-duration.enter", "0 0");                             // o Full-screen entering transition off      [200 200]
+user_pref("full-screen-api.transition-duration.leave", "1 0");                             // x Full-screen leaving transition minimum   [200 200]
+user_pref("full-screen-api.transition.timeout", 1);                                        // o Full-screen HTML5 minimum fade-to-black     [1000]
 user_pref("image.animation_mode", "once");                                                 // / GIF loop once - improves perf a lot
 //user_pref("intl.accept_languages", "en-US, en");                                         // / Set preferred language for displaying web pages
 //user_pref("javascript.use_us_english_locale", true);                                     // / Enforce US English regardless of system locale
@@ -153,9 +155,9 @@ user_pref("layout.css.font-visibility.level", 2);                               
 //user_pref("media.gmp-widevinecdm.visible", false);                                       // / Google widevine decryption for DRM (Netflix etc)
 //user_pref("media.navigator.enabled", false);                                             // / Disable media device enumeration
 //user_pref("media.peerconnection.enabled", false);                                        // / Google WebRTC (Web Real-Time Communication)
-user_pref("media.peerconnection.ice.default_address_only", true);                          // x Limit Google WebRTC IP leaks
-user_pref("media.peerconnection.ice.no_host", true);                                       // x Limit Google WebRTC IP leaks
-user_pref("media.peerconnection.ice.proxy_only_if_behind_proxy", true);                    // x limit Google WebRTC IP leaks
+user_pref("media.peerconnection.ice.default_address_only", false);                         // o Limit Google WebRTC IP leaks
+user_pref("media.peerconnection.ice.no_host", false);                                      // o Limit Google WebRTC IP leaks
+user_pref("media.peerconnection.ice.proxy_only_if_behind_proxy", false);                   // o limit Google WebRTC IP leaks
 user_pref("network.cookie.cookieBehavior", 3);                                             // x Block Unvisited cookies 3 / Cross-site cookies [4]
 //user_pref("network.cookie.lifetimePolicy", 0);                                           // / Cookies and site data delete on close 2 / keep [0]
 user_pref("network.cookie.thirdparty.nonsecureSessionOnly", true);                         // x Third-party cookies current session if nonsecure
@@ -203,7 +205,7 @@ user_pref("network.dns.echconfig.enabled", true);                               
 user_pref("network.http.altsvc.enabled", false);                                           // / Disable HTTP Alternative Services OR enable FPI
 user_pref("network.http.altsvc.oe", false);                                                // / Disable HTTP Alternative Services OR enable FPI
 user_pref("network.http.http3.enabled", true);                                             // x Enable HTTP3
-user_pref("network.http.redirection-limit", 10);                                           // x HTTP redirects (except HTML meta tags or JS) [20]
+user_pref("network.http.redirection-limit", 20);                                           // o HTTP redirects (except HTML meta tags or JS) [20]
 user_pref("network.http.referer.spoofSource", false);                                      // o Referer spoof - breaks sites
 user_pref("network.http.referer.XOriginPolicy", 0);                                        // x Referer cross origin (1 breaks codepen) [0]
 user_pref("network.http.referer.XOriginTrimmingPolicy", 1);                                // x Don't sent full URI cross origin [0]
@@ -226,7 +228,7 @@ user_pref("security.insecure_connection_icon.enabled", true);                   
 user_pref("security.mixed_content.block_object_subrequest", true);                         // x Block unencrypted object request on encrypted page
 user_pref("security.osclientcerts.autoload", true);                                        // x Use client certificates from the operating system
 user_pref("security.pki.sha1_enforcement_level", 1);                                       // x SHA-1 certificates deprecated [3]
-user_pref("security.ssl.disable_session_identifiers", true);                               // x Disable SSL session tracking
+user_pref("security.ssl.disable_session_identifiers", false);                              // o Disable SSL session tracking
 user_pref("security.ssl.require_safe_negotiation", true);                                  // x Require safe SSL negotiation
 user_pref("security.ssl.treat_unsafe_negotiation_as_broken", true);                        // x Display warning on the padlock for broken security
 user_pref("security.tls.enable_0rtt_data", false);                                         // o TLS1.3 0-RTT (round-trip time)
