@@ -21,6 +21,7 @@ menupopup:not(.PanelUI-subView) {
   -moz-appearance: none !important;
   background-color: var(--lwt-sidebar-background-color, var(--autocomplete-popup-background, var(--fixup2))) !important;
   color: var(--lwt-sidebar-text-color, var(--autocomplete-popup-color, var(--fixup1))) !important;
+  padding: 0 !important;
 }
 
 :-moz-any(#context-navigation > *, menu, menuitem):is([_moz-menuactive]),
