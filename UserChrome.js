@@ -14,10 +14,12 @@ try {
     if (!window._gBrowser || !skip.test(location.href)) return; window.gBrowser = window._gBrowser; let UC = {};
 /***********************************************    PLACE CUSTOM CODE BELOW THIS LINE!    ***********************************************/
 
-/// OneClickSearch by AveYo - see resource:///modules/UrlbarSearchOneOffs.jsm
+
+/// OneClickSearch redux v1.1 by AveYo - see resource:///modules/UrlbarSearchOneOffs.jsm
 /// ======================================================================================================================================
 UrlbarSearchOneOffs.prototype.handleSearchCommand = function (event, searchMode) {
-  if (this.selectedButton == this.view.oneOffSearchButtons.settingsButtonCompact) {
+  let button = this.selectedButton;
+  if (button == this.view.oneOffSearchButtons.settingsButtonCompact) {
     this.input.controller.engagementEvent.discard(); this.selectedButton.doCommand(); return;
   }
   let engine = Services.search.getEngineByName(searchMode.engineName); let { where, params } = this._whereToOpen(event);
@@ -25,6 +27,8 @@ UrlbarSearchOneOffs.prototype.handleSearchCommand = function (event, searchMode)
     this.input.handleNavigation({ event, oneOffParams: { openWhere: where, openParams: params, engine: this.selectedButton.engine, }, });
     this.selectedButton = null; return;
   }
+  let startQueryParams = {allowAutofill: !searchMode.engineName && searchMode.source != UrlbarUtils.RESULT_SOURCE.SEARCH, event, };
+  this.input.searchMode = searchMode; this.input.startQuery(startQueryParams); this.selectedButton = button;
 };
 
 /// Simple Hotkeys Override by AveYo
