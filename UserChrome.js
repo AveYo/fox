@@ -5,6 +5,7 @@ try {
   XPCOMUtils.defineLazyModuleGetters(this, {
     Services: "resource://gre/modules/Services.jsm",
     UrlbarSearchOneOffs: "resource:///modules/UrlbarSearchOneOffs.jsm",
+    UrlbarUtils: "resource:///modules/UrlbarUtils.jsm",
     //Preferences: "resource://gre/modules/Preferences.jsm",
   });
   function UserChromeJS() {Services.obs.addObserver(this, 'chrome-document-global-created', false);}
@@ -15,7 +16,7 @@ try {
 /***********************************************    PLACE CUSTOM CODE BELOW THIS LINE!    ***********************************************/
 
 
-/// OneClickSearch redux v1.1 by AveYo - see resource:///modules/UrlbarSearchOneOffs.jsm
+/// OneClickSearch redux v1.2 by AveYo - see resource:///modules/UrlbarSearchOneOffs.jsm
 /// ======================================================================================================================================
 UrlbarSearchOneOffs.prototype.handleSearchCommand = function (event, searchMode) {
   let button = this.selectedButton;
@@ -23,7 +24,7 @@ UrlbarSearchOneOffs.prototype.handleSearchCommand = function (event, searchMode)
     this.input.controller.engagementEvent.discard(); this.selectedButton.doCommand(); return;
   }
   let engine = Services.search.getEngineByName(searchMode.engineName); let { where, params } = this._whereToOpen(event);
-  if (engine) {
+  if (engine && !event.shiftKey) {
     this.input.handleNavigation({ event, oneOffParams: { openWhere: where, openParams: params, engine: this.selectedButton.engine, }, });
     this.selectedButton = null; return;
   }
@@ -53,3 +54,4 @@ let key_quit_rem = document.getElementById("key_quitApplication"); if (key_quit_
 
 /***********************************************    PLACE CUSTOM CODE ABOVE THIS LINE!    ***********************************************/
 } }; if (!Services.appinfo.inSafeMode) new UserChromeJS(); } catch(ex) {};
+/// ^-^
