@@ -20,10 +20,12 @@
 5. File - New  
     - [copy-paste the defaults/pref/enable-UserChrome.js content](defaults/pref/enable-UserChrome.js)  
 
-6. File - Save As `C:\Program Files\Mozilla Firefox\defaults\pref\enable-UserChrome.js`   
+6. File - Save As `C:\Program Files\Mozilla Firefox\defaults\pref\enable-UserChrome.js`
     - browse in the dialog to the path noted at step 1, and further to **defaults** **/** **pref** subfolder  
     - write at File name: _enable-UserChrome.js_  
     - select Save as type: _All Files_  
     - select Encoding: _ANSI_ or _UTF-8_  
 
 _steps for linux and macOS are similar, using Terminal and sudo nano/gedit/TextEdit_  
+
+For MacOS the file paths are `/Applications/Firefox.app/Contents/Resources/UserChrome.js` and `/Applications/Firefox.app/Contents/Resources/defaults/pref/enable-UserChrome.js` [ref](https://github.com/mozilla/policy-templates/blob/master/README.md)
