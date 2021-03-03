@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name            UrlFixUp redux v1
+// @name            UrlFixUp redux v2
 // @author          AveYo
-// @description     ctrl+enter adds .com ; shift+enter adds .net ; ctrl+shift+enter adds .org
+// @description     ctrl+enter: .com ; shift+enter: .net ; ctrl+shift+enter: .org ctrl+alt+enter: browser.fixup.alternate.suffix
 // @reference       see resource:///modules/UrlbarInput.jsm
 // @include         main
 // @onlyonce
@@ -24,8 +24,11 @@ UC.UrlFixUp = {
         this.handleNavigation({ event }); return;
       }
       if (this.value) {
-        let url = this.untrimmedValue.trim().replace(/\.(org|com|net)[/]*$/, '');
-        if (event.ctrlKey && event.shiftKey) {url+='.org';} else if (event.ctrlKey) {url+='.com';} else if (event.shiftKey) {url+='.net';}
+        let ext = '\.(org|com|net|'; let suffix = Services.prefs.getCharPref("browser.fixup.alternate.suffix");
+        if (/[a-zA-Z]+/.test(suffix)) { ext += suffix.replace('.', '') + ')[/]*$' } else { ext += ')[/]*$'; suffix = '' }
+        let regex =  new RegExp(ext, ''); let url = this.untrimmedValue.trim().replace(regex, '');
+        if (event.ctrlKey && event.altKey) { url += suffix } else if (event.ctrlKey && event.shiftKey) { url += '.org' }
+        else if (event.ctrlKey) { url += '.com' } else if (event.shiftKey) { url += '.net' }
         this.view.close(); this.value = url;
         //this._loadURL(url, event, 'current', {}); // uncomment to load url fixup directly
       }
