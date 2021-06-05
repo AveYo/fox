@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            OneClickSearch redux v2
+// @name            OneClickSearch redux v3
 // @author          AveYo
 // @description     see resource:///modules/UrlbarSearchOneOffs.jsm
 // @include         main
@@ -10,8 +10,11 @@ if (typeof UC === 'undefined') UC = {};
 
 UC.OneClickSearch = {
   init: function() {
-    let UrlbarSearchOneOffs = window.gURLBar.view.oneOffSearchButtons; let UrlbarUtils = window.UrlbarUtils;
-    UrlbarSearchOneOffs.handleSearchCommand = function (event, searchMode) {
+    XPCOMUtils.defineLazyModuleGetters(this, {
+      UrlbarSearchOneOffs: "resource:///modules/UrlbarSearchOneOffs.jsm",
+      UrlbarUtils: "resource:///modules/UrlbarUtils.jsm",
+    });
+    this.UrlbarSearchOneOffs.prototype.handleSearchCommand = function (event, searchMode) {
       let button = this.selectedButton;
       if (button == this.view.oneOffSearchButtons.settingsButtonCompact) {
         this.input.controller.engagementEvent.discard(); this.selectedButton.doCommand(); return;
@@ -29,5 +32,4 @@ UC.OneClickSearch = {
     console.info('\u2713 OneClickSearch');
   }
 };
-
 UC.OneClickSearch.init();
