@@ -10,19 +10,23 @@ if (typeof UC === 'undefined') UC = {};
 
 UC.Addressbar = {
   init: function() {
-    let UrlbarView = window.gURLBar.view;
-    UrlbarView.onQueryResults_uc = UrlbarView.onQueryResults;
-    UrlbarView.onQueryResults = function (queryContext) {
+    XPCOMUtils.defineLazyModuleGetters(this, {
+      UrlbarView: "resource:///modules/UrlbarView.jsm",
+      UrlbarInput: "resource:///modules/UrlbarInput.jsm",
+    });
+    this.UrlbarView.prototype.onQueryResults_uc = this.UrlbarView.prototype.onQueryResults;
+    this.UrlbarView.prototype.onQueryResults = function (queryContext) {
       this.onQueryResults_uc(queryContext);
       if (this.selectedElementIndex == 0 && !this.input.searchMode && !this.oneOffSearchButtons.selectedButton) {
         let result = this.getResultAtIndex(0);
         if (result?.payload.suggestion || result?.payload.query) {this.clearSelection();}
       }
     }; 
-    UrlbarView.input.handleCommand = function (event = null) {
+    this.UrlbarInput.prototype.handleCommand = function (event = null) {
       let element = this.view.selectedElement;
       let result = this.view.getResultFromElement(element);
       let btn = this.view.oneOffSearchButtons.selectedButton;
+
       if (result && result?.payload.keyword) {
         this.pickResult(result, event);
       }
