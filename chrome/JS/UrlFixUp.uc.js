@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            UrlFixUp redux v2
+// @name            UrlFixUp redux v3
 // @author          AveYo
 // @description     ctrl+enter: .com ; shift+enter: .net ; ctrl+shift+enter: .org ctrl+alt+enter: browser.fixup.alternate.suffix
 // @reference       see resource:///modules/UrlbarInput.jsm
@@ -11,7 +11,11 @@ if (typeof UC === 'undefined') UC = {};
 
 UC.UrlFixUp = {
   init: function() {
-    window.gURLBar.view.input.handleCommand = function (event = null) {
+    XPCOMUtils.defineLazyModuleGetters(this, {
+      UrlbarInput: "resource:///modules/UrlbarInput.jsm",
+    });
+
+    this.UrlbarInput.prototype.handleCommand = function (event = null) {
       if ((!event.ctrlKey && !event.shiftKey) || this.view.oneOffSearchButtons.selectedButton || this.searchMode) {
         let isMouseEvent = event instanceof this.window.MouseEvent; if (isMouseEvent && event.button == 2) { return; }
         if (this.view.isOpen) {
@@ -38,4 +42,3 @@ UC.UrlFixUp = {
 };
 
 UC.UrlFixUp.init();
-
