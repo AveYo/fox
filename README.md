@@ -1,5 +1,6 @@
 ### UserChrome.js stand-alone snippet loader by AveYo  
-snippets also available for other popular loaders in the [chrome/JS folder](https://github.com/AveYo/fox/tree/main/chrome/JS)
+featured snippets (**Addressbar** = _Open input as URL on Enter - press Tab to Search instead_ & **OneClickSearch**)  
+also available for other popular js loaders in the [chrome/JS folder](https://github.com/AveYo/fox/tree/main/chrome/JS)
 
 #### ELI5 request: sorry, [age restricted](https://www.reddit.com/r/firefox/comments/ls0ffy/oneoffsrefresh_redux_single_click_search_icons_in/gotqkg5/)  
 
