@@ -35,7 +35,7 @@ UC.Addressbar = {
           event, {engineName: btn.engine?.name, source: btn.source, entry: "oneoff"}
         );
       }
-      else if (this.searchMode || this.view.selectedElementIndex == 0 || (this.value && /\s/.test(this.value)) {
+      else if (this.searchMode || this.view.selectedElementIndex == 0 || (this.value && /\s/.test(this.value))) {
         this.handleNavigation({event});
       }
       else if (this.value && /\s/.test(this.value) === false) {
