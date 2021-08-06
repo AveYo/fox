@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            Addressbar redux
+// @name            Addressbar redux v3
 // @author          AveYo
 // @description     Open input as URL on Enter - press Tab to Search instead
 // @include         main
@@ -35,10 +35,10 @@ UC.Addressbar = {
           event, {engineName: btn.engine?.name, source: btn.source, entry: "oneoff"}
         );
       }
-      else if (this.searchMode || this.view.selectedElementIndex == 0){
+      else if (this.searchMode || this.view.selectedElementIndex == 0 || (this.value && /\s/.test(this.value)) {
         this.handleNavigation({event});
       }
-      else if (this.value) {
+      else if (this.value && /\s/.test(this.value) === false) {
         let flags = Ci.nsIURIFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS;
         if (this.isPrivate) {flags |= Ci.nsIURIFixup.FIXUP_FLAG_PRIVATE_CONTEXT;}
         let {preferredURI: uri, postData} = Services.uriFixup.getFixupURIInfo(this.value, flags);
