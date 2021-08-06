@@ -1,3 +1,6 @@
+### UserChrome.js stand-alone snippet loader by AveYo  
+snippets also available for other popular loaders in the [chrome/JS folder](https://github.com/AveYo/fox/tree/main/chrome/JS)
+
 #### ELI5 request: sorry, [age restricted](https://www.reddit.com/r/firefox/comments/ls0ffy/oneoffsrefresh_redux_single_click_search_icons_in/gotqkg5/)  
 
 1. in firefox, open **about:support** and take note of _Application Binary_  
@@ -28,4 +31,5 @@
 
 _steps for linux and macOS are similar, using Terminal and sudo nano/gedit/TextEdit_  
 
-For MacOS the file paths are `/Applications/Firefox.app/Contents/Resources/UserChrome.js` and `/Applications/Firefox.app/Contents/Resources/defaults/pref/enable-UserChrome.js` [ref](https://github.com/mozilla/policy-templates/blob/master/README.md)
+For MacOS the file paths are `/Applications/Firefox.app/Contents/Resources/UserChrome.js`  
+and `/Applications/Firefox.app/Contents/Resources/defaults/pref/enable-UserChrome.js` [ref](https://github.com/mozilla/policy-templates/blob/master/README.md)
