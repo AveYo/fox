@@ -34,9 +34,13 @@ user_pref("mousewheel.default.delta_multiplier_x", 100);                      //
 user_pref("mousewheel.default.delta_multiplier_y", 100);                      /// NSS    100       [100]
 user_pref("mousewheel.default.delta_multiplier_z", 100);                      /// NSS    100       [100]
 user_pref("mousewheel.min_line_scroll_amount", 0);                            /// NSS      0         [5]
-user_pref("mousewheel.system_scroll_override.enabled", false);                /// NSS  false      [true]
+user_pref("mousewheel.system_scroll_override.enabled", true);                 /// NSS   true      [true]
 user_pref("mousewheel.system_scroll_override_on_root_content.enabled", false);/// NSS  false      [true]
 user_pref("mousewheel.transaction.timeout", 1500);                            /// NSS   1500      [1500]
 user_pref("toolkit.scrollbox.horizontalScrollDistance", 3);                   /// NSS      3         [5]
 user_pref("toolkit.scrollbox.verticalScrollDistance", 3);                     /// NSS      3         [3]
 ///  this preset will reset couple extra variables for consistency
+
+/// CUSTOM
+//user_pref("mousewheel.system_scroll_override.enabled", false); /// AveYo: uncomment if scroll too fast              
+
