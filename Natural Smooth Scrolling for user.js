@@ -44,16 +44,13 @@ user_pref("toolkit.scrollbox.verticalScrollDistance",                      3);//
 ///  this preset will reset couple extra variables for consistency
 ///  copy into your firefox profile as user.js, add to existing one or edit via about:config
 
-/// AveYo: uncomment if you prefer even more smoothness than V3
+/// AveYo: uncomment if scroll too fast
+//user_pref("mousewheel.system_scroll_override.enabled", false);            
+
+/// AveYo: uncomment if you prefer even more smoothness than V3 
 //user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",   100);//NSS   [1250]
 //user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",       500);//NSS   [1000]
 
-/// AveYo: uncomment if you prefer the sharper V2
-//user_pref("general.smoothScroll.currentVelocityWeighting",            "0.15");//NSS ["0.25"]
-//user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",   200);//NSS   [1250]
-//user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",       200);//NSS   [1000]
-//user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaRatio",    "1.20");//NSS    [1.3]
-//user_pref("general.smoothScroll.stopDecelerationWeighting",            "0.6");//NSS  ["0.4"]
-
-/// AveYo: uncomment if scroll too fast
-//user_pref("mousewheel.system_scroll_override.enabled", false);            
+// AveYo: uncomment for something more sharper, then fiddle with these going lower for smoothness:
+//user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",  1250);// NSS: 125
+//user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",      1000);// NSS: 250
