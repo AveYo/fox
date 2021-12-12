@@ -12,8 +12,8 @@ user_pref("general.smoothScroll.mouseWheel.durationMaxMS",               100);//
 user_pref("general.smoothScroll.mouseWheel.durationMinMS",                 0);//NSS     [50]
 user_pref("general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS",   12);//NSS    [120]
 user_pref("general.smoothScroll.msdPhysics.enabled",                    true);//NSS  [false]
-user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",   125);//NSS   [1250]
-user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",       250);//NSS   [1000]
+user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",   175);//NSS   [1250]
+user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",       350);//NSS   [1000]
 user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaMS",           10);//NSS     [12]
 user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaRatio",     "1.1");//NSS    [1.3]
 user_pref("general.smoothScroll.msdPhysics.slowdownSpringConstant",     1000);//NSS   [2000]
@@ -48,9 +48,9 @@ user_pref("toolkit.scrollbox.verticalScrollDistance",                      3);//
 //user_pref("mousewheel.system_scroll_override.enabled", false);            
 
 /// AveYo: uncomment if you prefer even more smoothness than V3 
-//user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",   100);//NSS   [1250]
-//user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",       500);//NSS   [1000]
+//user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",   100);//NSS+  [1250]
+//user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",       500);//NSS+  [1000]
 
 // AveYo: uncomment for something more sharper, then fiddle with these going lower for smoothness:
-//user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",  1250);// NSS: 125
-//user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",      1000);// NSS: 250
+//user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant",  1250);
+//user_pref("general.smoothScroll.msdPhysics.regularSpringConstant",      1000);
