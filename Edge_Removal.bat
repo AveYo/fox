@@ -67,11 +67,6 @@ set-itemproperty $IFEO 'UseFilter' 1 -type dword -force -ea 0
 set-itemproperty "$IFEO\0" 'FilterFullPath' $(join-path $PROF 'Microsoft\Edge\Application\msedge.exe') -force -ea 0 
 set-itemproperty "$IFEO\0" 'Debugger' "wscript $file //B //T:5" -force -ea 0 
 
-$IFEO = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\msedge.exe'
-$cmd ='powershell.exe -win 1 -nop -c function ChrEdgeFkOff {$f=[uri]::unescapedatastring(([environment]::get_CommandLine()'
-$cmd+='-join'' ''-split''&url[=]'')[1].Trim([char]34)); [diagnostics.process]::start($f)} ; ChrEdgeFkOff --%'
-ni $IFEO -Force -ea 0 >''; sp $IFEO "Debugger" $cmd -Force -ea 0
-
 ## refresh explorer
 kill -name 'sihost'
 
