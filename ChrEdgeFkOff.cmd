@@ -7,7 +7,7 @@
 $_Paste_in_Powershell = {
 $vbs = @'
 ' ChrEdgeFkOff - make start menu web search or widgets links open in your chosen default browser - by AveYo  
-Dim C, A: For Each i in WScript.Arguments: A = A&" """&i&"""": Next :
+Dim C, A: For Each i in WScript.Arguments: A = A&" """&i&"""": Next '
 Set W = CreateObject("WScript.Shell"): Set E = W.Environment( "Process" ): E("CL") = A : C = ""
 C = C & "$U = get-itemproperty 'HKCU:\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice' 'ProgID';"
 C = C & "$C = get-itemproperty -lit $('Registry::HKCR\' + $U.ProgID + '\shell\open\command') '(Default)' -ea 0; $q=[char]34;"
