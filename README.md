@@ -1,3 +1,10 @@
+### NATURAL SMOOTH SCROLLING V4 "SHARP" - AveYo, 2020-2022   
+_probably the best smooth scrolling preset for mousewheel_  
+
+copy into firefox / librewolf profile as [user.js](Natural%20Smooth%20Scrolling%20for%20user.js), add to your existing user.js, or set in about:config  
+
+---
+
 ### UserChrome.js stand-alone snippet loader by AveYo  
 featured snippets (**Addressbar** = _Open input as URL on Enter - press Tab to Search instead_ & **OneClickSearch**)  
 also available for other popular js loaders in the [chrome/JS folder](https://github.com/AveYo/fox/tree/main/chrome/JS)
