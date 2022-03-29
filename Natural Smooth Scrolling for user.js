@@ -38,7 +38,7 @@ user_pref("general.smoothScroll.pixels.durationMaxMS",                   150);//
 user_pref("general.smoothScroll.pixels.durationMinMS",                   150);//NSS    [150]
 user_pref("general.smoothScroll.scrollbars.durationMaxMS",               150);//NSS    [150]
 user_pref("general.smoothScroll.scrollbars.durationMinMS",               150);//NSS    [150]
-user_pref("general.smoothScroll.mouseWheel.durationMaxMS",               150);//NSS    [200]
+user_pref("general.smoothScroll.mouseWheel.durationMaxMS",               200);//NSS    [200]
 user_pref("general.smoothScroll.mouseWheel.durationMinMS",                50);//NSS     [50]
 user_pref("layers.async-pan-zoom.enabled",                              true);//NSS   [true]
 user_pref("layout.css.scroll-behavior.spring-constant",                "250");//NSS    [250]
