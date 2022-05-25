@@ -1,3 +1,17 @@
+
+### ChrEdgeFkOff - redirect microsoft-edge: links from desktop/startmenu/help to the default browser  
+[ChrEdgeFkOff.cmd](ChrEdgeFkOff.cmd)  
+**v4 works even with Edge fully uninstalled!**  
+_if Edge is already removed, try installing Edge Stable, then remove it via Edge_Removal.bat (to preserve a very small stub)_  
+supports command line parameters: `install` or `remove`  
+
+
+### Edge Removal  
+[Edge_Removal.bat](Edge_Removal.bat)  
+already includes ChrEdgeFkOff; `$also_remove_webview` = `1` (set to `0` to skip it)  
+
+---
+
 ### NATURAL SMOOTH SCROLLING V4 "SHARP" - AveYo, 2020-2022   
 _probably the best smooth scrolling preset for mousewheel_  
 
