@@ -1,9 +1,9 @@
 @(set "0=%~f0"^)#) & powershell -nop -c iex([io.file]::ReadAllText($env:0)) & exit/b
 #:: double-click to run or just copy-paste into powershell - it's a standalone hybrid script
 #::
-$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.05.22'
+$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.05.25'
 
-$also_remove_webview = 0 
+$also_remove_webview = 1 
 
 ## RIP Edge legacy app first
 $edges = (get-appxpackage -allusers *MicrosoftEdge*).PackageFullName
@@ -56,29 +56,32 @@ $ChrEdgeFkOff = @'
 @echo off
 ::# toggle when launched without arguments, else jump to arguments: "install" or "remove"
 set CLI=%*& set IFEO=HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options& set MSE=& set BHO=&;
+for /f "tokens=2*" %%V in ('reg query "HKCR\MSEdgeMHT\shell\open\command" /ve 2^>nul') do set "ProgID=%%W"
+for %%W in (%ProgID%) do if not defined MSE set "MSE=%%~W"& set "MSEPath=%%~dpW"
 if /i "%CLI%"=="" reg query "%IFEO%\ie_to_edge_stub.exe\0" /v Debugger >nul 2>nul && goto remove || goto install
 if /i "%~1"=="install" (goto install) else if /i "%~1"=="remove" goto remove
 
 :install
-for /f "tokens=2*" %%V in ('reg query "HKCR\MSEdgeMHT\shell\open\command" /ve 2^>nul') do set "ProgID=%%W"
-for %%W in (%ProgID%) do if not defined MSE set MSE=%%W& set "MSEPath=%%~dpW"
 if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%\*ie_to_edge_stub.exe"') do set "BHO=%%~fW" 
+if not exist "%MSEPath%chredge.exe" if exist "%MSE%" mklink /h "%MSEPath%chredge.exe" "%MSE%" >nul
 if defined BHO copy /y "%BHO%" "%ProgramData%\\" >nul 2>nul
 call :export ChrEdgeFkOff.vbs > "%ProgramData%\ChrEdgeFkOff.vbs"
 reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul
 reg add HKCR\microsoft-edge /f /v "URL Protocol" /d "" >nul
 reg add HKCR\microsoft-edge /f /v "NoOpenWith" /d "" >nul 
-reg add HKCR\microsoft-edge\shell\open\command /f /ve /d "\\"%ProgramData%\ie_to_edge_stub.exe\\" \\"%%1\\"" >nul
+reg add HKCR\microsoft-edge\shell\open\command /f /ve /d "\\"%ProgramData%\ie_to_edge_stub.exe\\" %%1" >nul
 reg add HKCR\MSEdgeHTM /f /v "NoOpenWith" /d "" >nul
-reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d "\\"%ProgramData%\ie_to_edge_stub.exe\\" \\"%%1\\"" >nul
+reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d "\\"%ProgramData%\ie_to_edge_stub.exe\\" %%1" >nul
 reg add "%IFEO%\ie_to_edge_stub.exe" /f /v UseFilter /d 1 /t reg_dword >nul >nul
 reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v FilterFullPath /d "%ProgramData%\ie_to_edge_stub.exe" >nul
 reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v Debugger /d "wscript.exe \\"%ProgramData%\ChrEdgeFkOff.vbs\\" //B //T:60" >nul
-reg delete "%IFEO%\msedge.exe" /f >nul 2>nul
-exit /b
+reg add "%IFEO%\msedge.exe" /f /v UseFilter /d 1 /t reg_dword >nul
+reg add "%IFEO%\msedge.exe\0" /f /v FilterFullPath /d "%MSE%" >nul
+reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "wscript.exe \\"%ProgramData%\ChrEdgeFkOff.vbs\\" //B //T:60" >nul
+exit /b 
 
 :remove
-del /f /q "%ProgramData%\ChrEdgeFkOff.vbs" >nul 2>nul 
+del /f /q "%ProgramData%\ChrEdgeFkOff.vbs" "%MSEPath%chredge.exe" >nul 2>nul 
 rem del /f /q "%ProgramData%\ie_to_edge_stub.exe"
 reg delete HKCR\microsoft-edge /f /v "NoOpenWith" >nul 2>nul
 reg add HKCR\microsoft-edge\shell\open\command /f /ve /d "\\"%MSE%\\" --single-argument %%1" >nul
@@ -86,7 +89,7 @@ reg delete HKCR\MSEdgeHTM /f /v "NoOpenWith" >nul 2>nul
 reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d "\\"%MSE%\\" --single-argument %%1" >nul
 reg delete "%IFEO%\ie_to_edge_stub.exe" /f >nul 2>nul
 reg delete "%IFEO%\msedge.exe" /f >nul 2>nul
-exit /b 
+exit /b
 
 :export: [USAGE] call :export NAME
 setlocal enabledelayedexpansion || Prints all text between lines starting with :NAME:[ and :NAME:] - A pure batch snippet by AveYo
@@ -94,9 +97,9 @@ set [=&for /f "delims=:" %%s in ('findstr /nbrc:":%~1:\[" /c:":%~1:\]" "%~f0"')d
 <"%~f0" ((for /l %%i in (0 1 %[%) do set /p =)&for /l %%i in (%[% 1 %]%) do (set txt=&set /p txt=&echo(!txt!)) &endlocal &exit /b
 
 :ChrEdgeFkOff_vbs:[
-' ChrEdgeFkOff v4u - make start menu web search, widgets links or help open in your chosen default browser - by AveYo  
-Dim F,URL,decode,utf8,char,u,u1,u2,u3 : URL = "": Set W = CreateObject("WScript.Shell") 
-For Each i in WScript.Arguments: If InStr(1, i, "microsoft-edge:", 1) Then: URL = i: End If: Next
+' ChrEdgeFkOff v4 - make start menu web search, widgets links or help open in your chosen default browser - by AveYo  
+Dim A,F,CLI,URL,decode,utf8,char,u,u1,u2,u3,ProgID,Choice : CLI = "": URL = "": For i = 1 to WScript.Arguments.Count - 1
+A = WScript.Arguments(i): CLI = CLI & " " & A: If InStr(1, A, "microsoft-edge:", 1) Then: URL = A: End If: Next 
 
 decode = Split(URL,"%"): u = 0: Do While u <= UBound(decode): If u <> 0 Then
 char = Left(decode(u),2): If "&H" & Left(char,2) >= 128 Then
@@ -107,7 +110,13 @@ u2 = Cint("&H" & Mid(char,3,2)) Mod 32: u3 = Cint("&H" & Mid(char,5,2)) Mod 64: 
 Else: utf8 = Chr("&H" & char): End If: decode(u) = utf8 & Mid(decode(u),3)
 End If: u = u + 1: Loop: URL = Trim(Join(decode,"")) ' stackoverflow . com /questions/17880395
 
-F = Split(URL,"://",2,1): If UBound(F) > 0 Then URL = F(1): W.Run """https://" & URL & """", 1, False
+On error resume next
+Set W = CreateObject("WScript.Shell"): F = Split(URL,"://",2,1): If UBound(F) > 0 Then URL = F(1)
+ProgID = W.RegRead("HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice\ProgID")
+Choice = W.RegRead("HKCR\\" & ProgID & "\shell\open\command\\"): ProgID = W.RegRead("HKCR\MSEdgeMHT\shell\open\command\\")
+If Instr(1,ProgID,Chr(34),1) Then ProgID = Split(ProgID,Chr(34))(1) Else ProgID = Split(ProgID,Chr(32))(1)
+If Instr(1,Choice,ProgID,1) Then URL = "": End If: ProgID = Replace(ProgID,"msedge.exe","chredge.exe")
+If URL = "" Then W.Run """" & ProgID & """ " & Trim(CLI), 1, False Else W.Run """https://" & URL & """", 1, False
 ' done
 :ChrEdgeFkOff_vbs:]
 
