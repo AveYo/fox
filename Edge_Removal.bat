@@ -1,55 +1,88 @@
 @(set "0=%~f0"^)#) & powershell -nop -c iex([io.file]::ReadAllText($env:0)) & exit/b
 #:: double-click to run or just copy-paste into powershell - it's a standalone hybrid script
 #::
-$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.05.25'
+$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.06.19'
 
 $also_remove_webview = 1 
 
-## RIP Edge legacy app first
-$edges = (get-appxpackage -allusers *MicrosoftEdge*).PackageFullName
-$bloat = (get-appxprovisionedpackage -online |? {$_.PackageName -like '*MicrosoftEdge*'}).PackageName
+## fixed latest cumulative update (LCU) failing due to non-matching EndOfLife entries
+$appx = @(); $prov = @(); $msn = "Microsoft.MicrosoftEdge"
+$bing = "${msn}_8wekyb3d8bbwe", "${msn}.Stable_8wekyb3d8bbwe", "${msn}DevToolsClient_8wekyb3d8bbwe"
+get-appxpackage -allusers |where {$_.PackageFullName -like '*MicrosoftEdge*'} |foreach {$appx += $_.PackageFullName}
+get-appxprovisionedpackage -online |where {$_.PackageName -like '*MicrosoftEdge*'} |foreach {$prov += $_.PackageName}
+if ($also_remove_webview -ne 0) {
+  get-appxpackage -allusers |where {$_.PackageFullName -like '*Win32WebViewHost*'} |foreach {$appx += $_.PackageFullName}
+  get-appxprovisionedpackage -online |where {$_.PackageName -like '*Win32WebViewHost*'} |foreach {$prov += $_.PackageName}
+  $bing += 'Microsoft.Win32WebViewHost_cw5n1h2txyewy'
+}
 $users = ([wmi]"win32_userAccount.Domain='$env:userdomain',Name='$env:username'").SID,'S-1-5-18'
-$eoled = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\EndOfLife'
-foreach ($legacy in $bloat) {
-  foreach ($user in $users) { ni "$eoled\$user\$legacy" -Force -ea 0 >'' }
-  powershell -nop -c remove-appxprovisionedpackage -online -packagename $legacy 2>&1 >''
-}
-foreach ($legacy in $edges) {
-  foreach ($user in $users) { ni "$eoled\$user\$legacy" -Force -ea 0 >'' }
-  powershell -nop -c remove-appxpackage -allusers -package $legacy 2>&1 >''
-}
+$store = 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
+reg add "$store" /f /v CleanupTaskComplete /d 0 /t reg_dword 2>&1 >''
+foreach ($p in $bing) { reg add "$store\Deprovisioned\$p" /f /ve /d "" 2>&1 >'' }
+foreach ($p in $prov) { foreach ($user in $users) { reg add "$store\EndOfLife\$user\$p" /f /ve /d "" 2>&1 >'' } }
+foreach ($p in $appx) { foreach ($user in $users) { reg add "$store\EndOfLife\$user\$p" /f /ve /d "" 2>&1 >'' } }
 
-## remove ChrEdge lame uninstall block
-$uninstall = '\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge'
-foreach ($wow in '','\Wow6432Node') {'HKCU:','HKLM:' |% { rp $($_ + $wow + $uninstall) NoRemove -Force -ea 0 } }
-
-## find all ChrEdge setup.exe
-$setup = @(); $bho = @(); "LocalApplicationData","ProgramFilesX86","ProgramFiles" |% {
-  $setup += dir $([Environment]::GetFolderPath($_) +'\Microsoft\Edge*\setup.exe') -rec -ea 0
-  $bho += dir $([Environment]::GetFolderPath($_) +'\Microsoft\Edge*\ie_to_edge_stub.exe') -rec -ea 0
+## find all Edge setup.exe
+$setup = @(); $root = @(); $bho = @(); "LocalApplicationData","ProgramFilesX86","ProgramFiles" |foreach {
+  $setup += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\setup.exe') -rec -ea 0
+  $root += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*') -rec -ea 0
+  $bho += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\ie_to_edge_stub.exe') -rec -ea 0
 }
 
 ## export ChrEdgeFkOff innovative redirector
-foreach ($b in $bho){ if (test-path $b) {copy $b "$env:ProgramData\ie_to_edge_stub.exe" -Force -ea 0; break} }
+foreach ($b in $bho) { if (test-path $b) { copy $b "$env:ProgramData\ie_to_edge_stub.exe" -force -ea 0; break } }
 
-## compute ChrEdge uninstall arguments
-$arg = @(); $u = '--uninstall'; $v = ' --verbose-logging --force-uninstall --delete-profile'
-$channel = '-beta','-dev','-internal','-sxs',''; if ($also_remove_webview -ne 0) {$channel += 'webview'}
-foreach ($l in '',' --system-level'){ foreach ($m in ' --msedge',''){ 
-if ($m -eq ''){$arg += $u + $l + $v} else {$channel |% {$arg += $u + $l + $m + $_ + $v} } } }
+## set useless policies
+foreach ($p in 'HKLM\SOFTWARE\Policies','HKLM\SOFTWARE') {
+  reg add "$p\Microsoft\EdgeUpdate" /f /v InstallDefault /d 0 /t reg_dword >''
+  reg add "$p\Microsoft\EdgeUpdate" /f /v "Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" /d 0 /t reg_dword >''
+  reg add "$p\Microsoft\EdgeUpdate" /f /v DoNotUpdateToEdgeWithChromium /d 1 /t reg_dword >''
+}
 
-## brute-run found ChrEdge setup.exe with uninstall args
-foreach ($ChrEdge in $setup){ foreach ($purge in $arg) { powershell -nop -c "start '$ChrEdge' -args '$purge'" 2>&1 >'' } }
+## remove Edge lame uninstall block
+$uninstall = '\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge'
+foreach ($wow in '','\Wow6432Node') {'HKCU:','HKLM:' |foreach { rp $($_ + $wow + $uninstall) NoRemove -force -ea 0 } }
 
-## remove leftover shortcuts
-$IELaunch = '\Microsoft\Internet Explorer\Quick Launch'
-del $([Environment]::GetFolderPath('Desktop') + '\Microsoft Edge*.lnk') -Force -ea 0 >''
-del $([Environment]::GetFolderPath('ApplicationData') + $IELaunch + '\Microsoft Edge*.lnk') -Force -ea 0 >''
-del $($env:SystemRoot+'\System32\config\systemprofile\AppData\Roaming' + $IELaunch + '\Microsoft Edge*.lnk') -Force -ea 0 >''
+## shut it down
+foreach ($e in 'MicrosoftEdgeUpdate','chredge','msedge','msedgewebview2','Widgets') { kill -name $e -force -ea 0 }
 
-## prevent reinstall via windows updates - ms will probably "accidentally" break this often
-ni "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Force -ea 0 >''
-sp "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" DoNotUpdateToEdgeWithChromium 1 -Type Dword -ea 0
+## uninstall app
+foreach ($p in $prov) { powershell -nop -c remove-appxprovisionedpackage -online -packagename $p 2>&1 >''}
+foreach ($p in $appx) { 
+  powershell -nop -c remove-appxpackage -package $p 2>&1 >''; 
+  powershell -nop -c remove-appxpackage -allusers -package $p 2>&1 >''
+}
+
+## shut it down, again
+foreach ($e in 'MicrosoftEdgeUpdate','chredge','msedge','msedgewebview2','Widgets') { kill -name $e -force -ea 0 }
+
+## brute-run found Edge setup.exe with uninstall args
+$purge = '--uninstall --force-uninstall --system-level'
+if ($also_remove_webview -ne 0) { foreach ($s in $setup) { try{ start -wait $s -args "--msedgewebview $purge" } catch{} } }
+foreach ($s in $setup) { try{ start -wait $s -args "--msedge $purge" } catch{} }
+
+## fix LCU
+foreach ($p in $prov) { foreach ($user in $users) { reg delete "$store\EndOfLife\$user\$p" /f 2>&1 >'' } }
+foreach ($p in $appx) { foreach ($user in $users) { reg delete "$store\EndOfLife\$user\$p" /f 2>&1 >'' } }
+$done1 = reg query "$store\EndOfLife" /f "*MicrosoftEdge*" /k /s
+foreach ($i in $done1) { if ($i -like '*MicrosoftEdge*') {reg delete "$i" /f 2>&1 >''} }
+$done2 = reg query "$store\EndOfLife" /f "*Win32WebViewHost*" /k /s
+foreach ($i in $done2) { if ($i -like '*Win32WebViewHost*') {reg delete "$i" /f 2>&1 >''} }
+
+## remove leftovers
+#foreach ($i in 'MicrosoftEdgeUpdateTaskMachineCore','MicrosoftEdgeUpdateTaskMachineUA') { schtasks /delete /tn "$i" /f 2>&1 >''}
+#$updt = reg query "HKLM\SYSTEM\CurrentControlSet\Services" /f "edgeupd*" /k
+#foreach ($i in $updt) { if ($i -like '\Services\edgeupd*') {reg delete "$i" /f 2>&1 >''} }
+#$elev = reg query "HKLM\SYSTEM\CurrentControlSet\Services" /f "EdgeElevat*" /k
+#foreach ($i in $elev) { if ($i -like '\Services\EdgeElevat*') {reg delete "$i" /f 2>&1 >''} }
+#$IELaunch = '\Microsoft\Internet Explorer\Quick Launch'
+#del $([Environment]::GetFolderPath('Desktop') + '\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
+#del $([Environment]::GetFolderPath('ApplicationData') + $IELaunch + '\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
+#del $($env:SystemRoot+'\System32\config\systemprofile\AppData\Roaming' + $IELaunch + '\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
+#del $($env:SystemDrive+'\Users\Public\Desktop\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
+#foreach ($dir in $root) { rmdir $dir -rec -force -ea 0 2>&1 >'' } 
+
+##################################################################################################################################
 
 ## add ChrEdgeFkOff to redirect microsoft-edge: anti-competitive links to the default browser 
 $ChrEdgeFkOff = @'
@@ -62,7 +95,7 @@ if /i "%CLI%"=="" reg query "%IFEO%\ie_to_edge_stub.exe\0" /v Debugger >nul 2>nu
 if /i "%~1"=="install" (goto install) else if /i "%~1"=="remove" goto remove
 
 :install
-if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%\*ie_to_edge_stub.exe"') do set "BHO=%%~fW" 
+if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%\*ie_to_edge_stub.exe" 2^>nul') do set "BHO=%%~fW" 
 if not exist "%MSEPath%chredge.exe" if exist "%MSE%" mklink /h "%MSEPath%chredge.exe" "%MSE%" >nul
 if defined BHO copy /y "%BHO%" "%ProgramData%\\" >nul 2>nul
 call :export ChrEdgeFkOff.vbs > "%ProgramData%\ChrEdgeFkOff.vbs"
@@ -124,10 +157,12 @@ If URL = "" Then W.Run """" & ProgID & """ " & Trim(CLI), 1, False Else W.Run ""
 [io.file]::WriteAllText("$env:Temp\ChrEdgeFkOff.cmd",$ChrEdgeFkOff) >''
 & "$env:Temp\ChrEdgeFkOff.cmd" install
 
-## refresh explorer
-kill -name 'sihost'
+##################################################################################################################################
 
-echo " EDGE REMOVED! IF YOU NEED TO SETUP ANOTHER BROWSER, ENTER: `n"
+## refresh explorer
+kill -name 'sihost' -force
+
+echo "`n EDGE REMOVED! IF YOU NEED TO SETUP ANOTHER BROWSER, ENTER: `n"
 write-host -fore green @'
  $ffsetup='https://download.mozilla.org/?product=firefox-latest&os=win';
  $firefox="$([Environment]::GetFolderPath('Desktop'))\FirefoxSetup.exe";
