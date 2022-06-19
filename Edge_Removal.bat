@@ -69,19 +69,6 @@ foreach ($i in $done1) { if ($i -like '*MicrosoftEdge*') {reg delete "$i" /f 2>&
 $done2 = reg query "$store\EndOfLife" /f "*Win32WebViewHost*" /k /s
 foreach ($i in $done2) { if ($i -like '*Win32WebViewHost*') {reg delete "$i" /f 2>&1 >''} }
 
-## remove leftovers
-#foreach ($i in 'MicrosoftEdgeUpdateTaskMachineCore','MicrosoftEdgeUpdateTaskMachineUA') { schtasks /delete /tn "$i" /f 2>&1 >''}
-#$updt = reg query "HKLM\SYSTEM\CurrentControlSet\Services" /f "edgeupd*" /k
-#foreach ($i in $updt) { if ($i -like '\Services\edgeupd*') {reg delete "$i" /f 2>&1 >''} }
-#$elev = reg query "HKLM\SYSTEM\CurrentControlSet\Services" /f "EdgeElevat*" /k
-#foreach ($i in $elev) { if ($i -like '\Services\EdgeElevat*') {reg delete "$i" /f 2>&1 >''} }
-#$IELaunch = '\Microsoft\Internet Explorer\Quick Launch'
-#del $([Environment]::GetFolderPath('Desktop') + '\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
-#del $([Environment]::GetFolderPath('ApplicationData') + $IELaunch + '\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
-#del $($env:SystemRoot+'\System32\config\systemprofile\AppData\Roaming' + $IELaunch + '\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
-#del $($env:SystemDrive+'\Users\Public\Desktop\Microsoft Edge*.lnk') -force -ea 0 2>&1 >''
-#foreach ($dir in $root) { rmdir $dir -rec -force -ea 0 2>&1 >'' } 
-
 ##################################################################################################################################
 
 ## add ChrEdgeFkOff to redirect microsoft-edge: anti-competitive links to the default browser 
