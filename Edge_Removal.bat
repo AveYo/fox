@@ -5,6 +5,7 @@ $_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 20
 
 $also_remove_webview = 1 
 
+## targets
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge")
 if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "Win32WebViewHost"}
 ## enable admin privileges 
@@ -35,17 +36,17 @@ $store = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
 $users = @('S-1-5-18'); if (test-path $store) {$users += $((dir $store |where {$_ -like '*S-1-5-21*'}).PSChildName)}
 foreach ($choice in $remove_appx) { if ('' -eq $choice.Trim()) {continue}
   foreach ($appx in $($provisioned |where {$_.PackageName -like "*$choice*"})) {
-    $PackageFamilyName = ($appxpackage |where {$_.Name -eq $appx.DisplayName}).PackageFamilyName
-    reg add "$store_reg\Deprovisioned\$PackageFamilyName" /f /ve /d "" 2>&1 >'' 
+    $PackageFamilyName = ($appxpackage |where {$_.Name -eq $appx.DisplayName}).PackageFamilyName; $PackageFamilyName
+    reg add "$store_reg\Deprovisioned\$PackageFamilyName" /f 2>&1 >'' 
     dism /online /remove-provisionedappxpackage /packagename:$($appx.PackageName) 2>&1 >''
     #powershell -nop -c remove-appxprovisionedpackage -packagename "'$($appx.PackageName)'" -online 2>&1 >'' 
   }
   foreach ($appx in $($appxpackage |where {$_.PackageFullName -like "*$choice*"})) {
     $inbox = (gp "$store\InboxApplications\*$($appx.Name)*" Path).PSChildName
-    $PackageFamilyName = $appx.PackageFamilyName; $PackageFullName = $appx.PackageFullName
+    $PackageFamilyName = $appx.PackageFamilyName; $PackageFullName = $appx.PackageFullName; $PackageFullName
     foreach ($app in $inbox) {reg delete "$store_reg\InboxApplications\$app" /f 2>&1 >'' }
-    reg add "$store_reg\Deprovisioned\$PackageFamilyName" /f /ve /d "" 2>&1 >''
-    foreach ($sid in $users) {reg add "$store_reg\EndOfLife\$sid\$PackageFullName" /f /ve /d "" 2>&1 >''}
+    reg add "$store_reg\Deprovisioned\$PackageFamilyName" /f 2>&1 >''
+    foreach ($sid in $users) {reg add "$store_reg\EndOfLife\$sid\$PackageFullName" /f 2>&1 >''}
     dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 2>&1 >''
     powershell -nop -c remove-appxpackage -package "'$PackageFullName'" -AllUsers 2>&1 >''
     foreach ($sid in $users) {reg delete "$store_reg\EndOfLife\$sid\$PackageFullName" /f 2>&1 >''}
@@ -57,9 +58,10 @@ foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','msedgewebview2','Widget
 $purge = '--uninstall --system-level --force-uninstall'
 if ($also_remove_webview -eq 1) { foreach ($s in $setup) { try{ start -wait $s -args "--msedgewebview $purge" } catch{} } }
 foreach ($s in $setup) { try{ start -wait $s -args "--msedge $purge" } catch{} }
-## prevent latest cumulative update (LCU) failing due to non-matching EndOfLife entries
+## prevent latest cumulative update (LCU) failing due to non-matching EndOfLife Edge entries
 foreach ($i in $remove_appx) {
   dir "$store\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {reg delete "$($_.Name)" /f 2>&1 >''}
+  dir "$store\Deleted\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {reg delete "$($_.Name)" /f 2>&1 >''}
 }
 
 ## add ChrEdgeFkOff to redirect microsoft-edge: anti-competitive links to the default browser 
