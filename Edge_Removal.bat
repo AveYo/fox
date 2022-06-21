@@ -1,7 +1,7 @@
 @(set "0=%~f0"^)#) & powershell -nop -c iex([io.file]::ReadAllText($env:0)) & exit/b
 #:: double-click to run or just copy-paste into powershell - it's a standalone hybrid script
 #::
-$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.06.20'
+$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.06.21'
 
 $also_remove_webview = 1 
 
@@ -15,6 +15,7 @@ $D1=[uri].module.gettype('System.Diagnostics.Process')."GetM`ethods"(42) |where 
 foreach ($p in 'HKLM\SOFTWARE\Policies','HKLM\SOFTWARE') {
   reg add "$p\Microsoft\EdgeUpdate" /f /v InstallDefault /d 0 /t reg_dword >''
   reg add "$p\Microsoft\EdgeUpdate" /f /v "Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" /d 0 /t reg_dword >''
+  reg add "$p\Microsoft\EdgeUpdate" /f /v "Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" /d 1 /t reg_dword >''
   reg add "$p\Microsoft\EdgeUpdate" /f /v DoNotUpdateToEdgeWithChromium /d 1 /t reg_dword >''
 }
 ## clear win32 uninstall block
