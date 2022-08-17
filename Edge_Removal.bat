@@ -1,7 +1,7 @@
 @(set "0=%~f0"^)#) & powershell -nop -c iex([io.file]::ReadAllText($env:0)) & exit/b
 #:: double-click to run or just copy-paste into powershell - it's a standalone hybrid script
 #::
-$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.07.17'
+$_Paste_in_Powershell = { $host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.08.17'
 
 $also_remove_webview = 1
 
@@ -75,14 +75,14 @@ for /f "tokens=* delims=" %%. in ('reg query "HKCR\MSEdgeMHT\shell\open\command"
 if defined ProgID set "ProgID=%ProgID:*)    =%"
 if defined ProgID set "ProgID=%ProgID:*)    =%"
 for %%. in (%ProgID%) do if not defined MSE set "MSE=%%~."& set "MSEPath=%%~dp."
-if /i "%CLI%"=="" reg query "%IFEO%\ie_to_edge_stub.exe\0" /v Debugger >nul 2>nul && goto remove || goto install
-if /i "%~1"=="install" (goto install) else if /i "%~1"=="remove" goto remove
+rem if /i "%CLI%"=="" reg query "%IFEO%\ie_to_edge_stub.exe\0" /v Debugger >nul 2>nul && goto remove || goto install
+rem if /i "%~1"=="install" (goto install) else if /i "%~1"=="remove" goto remove
 
 :install
 if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%\*ie_to_edge_stub.exe" 2^>nul') do set "BHO=%%~fW"
 if not exist "%MSEPath%chredge.exe" if exist "%MSE%" mklink /h "%MSEPath%chredge.exe" "%MSE%" >nul
 if defined BHO copy /y "%BHO%" "%ProgramData%\\" >nul 2>nul
-call :export ChrEdgeFkOff.vbs > "%ProgramData%\ChrEdgeFkOff.vbs"
+call :export ChrEdgeFkOff_vbs > "%ProgramData%\ChrEdgeFkOff.vbs"
 reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul
 reg add HKCR\microsoft-edge /f /v "URL Protocol" /d "" >nul
 reg add HKCR\microsoft-edge /f /v "NoOpenWith" /d "" >nul
@@ -114,7 +114,7 @@ set [=&for /f "delims=:" %%s in ('findstr /nbrc:":%~1:\[" /c:":%~1:\]" "%~f0"')d
 <"%~f0" ((for /l %%i in (0 1 %[%) do set /p =)&for /l %%i in (%[% 1 %]%) do (set txt=&set /p txt=&echo(!txt!)) &endlocal &exit /b
 
 :ChrEdgeFkOff_vbs:[
-' ChrEdgeFkOff v4 - make start menu web search, widgets links or help open in your chosen default browser - by AveYo
+' ChrEdgeFkOff v5 - make start menu web search, widgets links or help open in your chosen default browser - by AveYo
 Dim A,F,CLI,URL,decode,utf8,char,u,u1,u2,u3,ProgID,Choice : CLI = "": URL = "": For i = 1 to WScript.Arguments.Count - 1
 A = WScript.Arguments(i): CLI = CLI & " " & A: If InStr(1, A, "microsoft-edge:", 1) Then: URL = A: End If: Next
 
