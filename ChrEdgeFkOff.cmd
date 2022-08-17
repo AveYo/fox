@@ -1,10 +1,10 @@
 @(set '(=)||' <# lean and mean cmd / powershell hybrid #> @'
 
 ::# ChrEdgeFkOff - make desktop & start menu web search, widgets links or help open in your chosen default browser - by AveYo
-::# v4 innovative redirect even if Edge is uninstalled! v3 powershell-less active part; parse "install" or "remove" arguments
+::# v5 fix; v4 innovative redirect even if Edge is uninstalled! v3 powershell-less active part; parse "install" or "remove" args
 ::# if Edge is already removed, try installing Edge Stable, then remove it via Edge_Removal.bat
 
-@echo off & title ChrEdgeFkOff || AveYo 2022.07.17
+@echo off & title ChrEdgeFkOff || AveYo 2022.08.17
 
 ::# elevate with native shell by AveYo
 >nul reg add hkcu\software\classes\.Admin\shell\runas\command /f /ve /d "cmd /x /d /r set \"f0=%%2\"& call \"%%2\" %%3"& set _= %*
@@ -27,7 +27,7 @@ if /i "%~1"=="install" (goto install) else if /i "%~1"=="remove" goto remove
 if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%\*ie_to_edge_stub.exe"') do set "BHO=%%~fW"
 if not exist "%MSEPath%chredge.exe" if exist "%MSE%" mklink /h "%MSEPath%chredge.exe" "%MSE%" >nul
 if defined BHO copy /y "%BHO%" "%ProgramData%\" >nul 2>nul
-call :export ChrEdgeFkOff.vbs > "%ProgramData%\ChrEdgeFkOff.vbs"
+call :export ChrEdgeFkOff_vbs > "%ProgramData%\ChrEdgeFkOff.vbs"
 reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul
 reg add HKCR\microsoft-edge /f /v "URL Protocol" /d "" >nul
 reg add HKCR\microsoft-edge /f /v "NoOpenWith" /d "" >nul
@@ -41,7 +41,7 @@ reg add "%IFEO%\msedge.exe" /f /v UseFilter /d 1 /t reg_dword >nul
 reg add "%IFEO%\msedge.exe\0" /f /v FilterFullPath /d "%MSE%" >nul
 reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "wscript.exe \"%ProgramData%\ChrEdgeFkOff.vbs\" //B //T:60" >nul
 if "%CLI%" neq "" exit /b
-%<%:f0 " ChrEdgeFkOff V4 "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
+%<%:f0 " ChrEdgeFkOff V5 "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
 timeout /t 7
 exit /b
 
@@ -55,7 +55,7 @@ reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d "\"%MSE%\" --single-argument
 reg delete "%IFEO%\ie_to_edge_stub.exe" /f >nul 2>nul
 reg delete "%IFEO%\msedge.exe" /f >nul 2>nul
 if "%CLI%" neq "" exit /b
-%<%:f0 " ChrEdgeFkOff V4 "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
+%<%:f0 " ChrEdgeFkOff V5 "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
 timeout /t 7
 exit /b
 
@@ -65,7 +65,7 @@ set [=&for /f "delims=:" %%s in ('findstr /nbrc:":%~1:\[" /c:":%~1:\]" "%~f0"')d
 <"%~f0" ((for /l %%i in (0 1 %[%) do set /p =)&for /l %%i in (%[% 1 %]%) do (set txt=&set /p txt=&echo(!txt!)) &endlocal &exit /b
 
 :ChrEdgeFkOff_vbs:[
-' ChrEdgeFkOff v4 - make start menu web search, widgets links or help open in your chosen default browser - by AveYo
+' ChrEdgeFkOff v5 - make start menu web search, widgets links or help open in your chosen default browser - by AveYo
 Dim A,F,CLI,URL,decode,utf8,char,u,u1,u2,u3,ProgID,Choice : CLI = "": URL = "": For i = 1 to WScript.Arguments.Count - 1
 A = WScript.Arguments(i): CLI = CLI & " " & A: If InStr(1, A, "microsoft-edge:", 1) Then: URL = A: End If: Next
 
@@ -88,5 +88,5 @@ If URL = "" Then W.Run """" & ProgID & """ " & Trim(CLI), 1, False Else W.Run ""
 ' done
 :ChrEdgeFkOff_vbs:]
 
-'@); $0 = "$env:temp\ChrEdgeFkOff.cmd"; ${(=)||} | out-file $0 -encoding default -force; & $0
+'@); $0 = "$env:temp\ChrEdgeFkOff.cmd"; ${(=)||} -split "\r?\n" | out-file $0 -encoding default -force; & $0
 # press enter
