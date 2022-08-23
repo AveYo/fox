@@ -1,11 +1,10 @@
 
-### ChrEdgeFkOff - redirect microsoft-edge: url from desktop/startmenu/help to the default browser  
+### ChrEdgeFkOff - redirect microsoft-edge: url from startmenu/help to the default browser  
 [ChrEdgeFkOff.cmd](ChrEdgeFkOff.cmd)  
 **since v4 works even with Edge fully uninstalled!**  
 _if Edge is already removed, install Edge Stable, then remove it via Edge_Removal.bat (to preserve a small stub)_  
 supports command line parameters: `install` or `remove`  
 since v6 generate a pure batch script to prevent lame AVs false-positives  
-since v7 open `WS/redirect/` results directly  
 
 
 ### Edge Removal  

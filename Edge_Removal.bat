@@ -4,7 +4,7 @@ sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
 
 $also_remove_webview = 1
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.08.22'
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.08.23'
 ## targets
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge")
 if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "Win32WebViewHost"}
@@ -68,7 +68,7 @@ foreach ($i in $remove_appx) {
 ## add ChrEdgeFkOff to redirect microsoft-edge: anti-competitive links to the default browser
 $IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
 $MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
-$MSE = "$MSEPath\msedge.exe"; $Headless_by_AveYo = """$env:systemroot\system32\conhost.exe"" --headless" # still innovating
+$Headless_by_AveYo = """$env:systemroot\system32\conhost.exe"" --headless" # still innovating
 cmd /c "reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v ""URL Protocol"" /d """" >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v NoOpenWith /d """" >nul"
@@ -83,7 +83,7 @@ cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v FilterFullPath /d ""$MSEP\msedge.ex
 cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$Headless_by_AveYo %ProgramData%\ChrEdgeFkOff.cmd"" >nul"
 
 $ChrEdgeFkOff = @$
-@title ChrEdgeFkOff V8+ & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+@title ChrEdgeFkOff V9 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
 rem PoS Defender started screaming about the former vbs version, so now this window will flash briefly. V7: not anymore ;)
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove ChrEdgeFkOff script. & pause & exit /b
@@ -97,21 +97,19 @@ if defined CLI set "CLI=%CLI:*ie_to_edge_stub.exe`` =%"
 if defined CLI set "CLI=%CLI:*ie_to_edge_stub.exe =%"
 if defined CLI set "CLI=%CLI:*msedge.exe`` =%"
 if defined CLI set "CLI=%CLI:*msedge.exe =%"
-if defined CLI set "URI=%CLI:microsoft-edge=%"
+set "FIX=%CLI:~-1%"
+if defined CLI if "%FIX%"==" " set "CLI=%CLI:~0,-1%"
+if defined CLI set "RED=%CLI:microsoft-edge=%"
 if defined CLI set "URL=%CLI:http=%"
 if defined CLI set "ARG=%CLI:``="%"
-if "%CLI%" equ "%URI%" (set NOOP=1) else if "%CLI%" equ "%URI%" (set NOOP=1)
-if defined NOOP if exist "%PassTrough%" start "" "%PASSTROUGH%" %ARG%
+if "%CLI%" equ "%RED%" (set NOOP=1) else if "%CLI%" equ "%URL%" (set NOOP=1)
+if defined NOOP if exist "%PassTrough%" start "" "%PassTrough%" %ARG%
 if defined NOOP exit /b
 set "URL=%CLI:*microsoft-edge=%"
 set "URL=http%URL:*http=%"
+set "FIX=%URL:~-2%"
+if defined URL if "%FIX%"=="``" set "URL=%URL:~0,-2%"
 call :dec_url
-set "DIRECT=%URL:WS/redirect/=%"
-if "%URL%" equ "%DIRECT%" start "" "%Choice%" "%URL%" & exit /b
-set "REDIRECT=%URL:*&url=%"
-set "REDIRECT=%REDIRECT:~1%"
-set "REDIRECT="%REDIRECT:&=" %"
-set URL=& for %%. in (%REDIRECT%) do if not defined URL set "URL=%%~." & call :dec_url64
 start "" "%Choice%" "%URL%" & exit /b
 
 :reg_var [USAGE] call :reg_var "HKCU\Volatile Environment" value-or-"" variable [extra options]
@@ -120,30 +118,12 @@ for /f "tokens=* delims=" %%V in ('reg query "%~1" %reg_var/% /z /se "," %4 %5 %
 set "reg_var/=" & if %2=="" if defined reg_var set "reg_var=%reg_var:*)    =%"
 if not defined reg_var (set "%~3=" & exit /b) else set "%~3=%reg_var:*)    =%" & set reg_var=& exit /b
 
-:dec_url64 brute url 64 decoding by AveYo - revised for speed
-setlocal enabledelayedexpansion& pushd "%ProgramData%"& rem inspired by Aacini's string to hex and pizza's decode vbs
-set asc=& <nul set /p "=%URL%" >~h1.tmp& for %%. in (~h1.tmp) do fsutil file createnew ~h2.tmp %%~Z. >nul
-for /f "skip=1 tokens=2" %%. in ('fc /b ~h1.tmp ~h2.tmp') do set z=-1& set /a h=0x%%.& if !h! gtr 32 if !h! lss 127 (
-  (if !h! gtr 64 if !h! lss 92 set /a z=h-65) & (if !h! gtr 96 if !h! lss 124 set /a z=h-71)
-  (if !h! gtr 47 if !h! lss 59 set /a z=h +4) & (if !h! equ 45 set /a z=62) & (if !h! equ 47 set /a z=63) & set "asc=!asc! !z!" )
-set dec=&set URL=&set /a o=0& set /a b=0& set /a i=0& set hl=0123456789ABCDEF& set /a n=0& set ff=forfiles /m ChrEdgeFkOff.cmd /c
-for %%c in (%asc%) do ( if %%c neq -1 ( ( if !o! equ 0 ( set /a i=%%c*4& set /a b=6 ) else (
-  if !o! equ 2 ( set /a i+=%%c   & set /a x=i%%256& set /a H=!x!/16& set /a L=!x!%%16& set /a n+=4
-    call set H=%%hl:~!H!,1%%& call set L=%%hl:~!L!,1%%& set "dec=!dec!0x!h!!l!"& set /a b=0 ) else (
-  if !o! equ 4 ( set /a i+=%%c/4 & set /a x=i%%256& set /a H=!x!/16& set /a L=!x!%%16& set /a n+=4
-    call set H=%%hl:~!H!,1%%& call set L=%%hl:~!L!,1%%& set "dec=!dec!0x!h!!l!"& set /a i=%%c*64& set /a b=2 ) else (
-  set /a i+=%%c/16& set /a x=i%%256& set /a H=!x!/16& set /a L=!x!%%16& set /a n+=4
-    call set H=%%hl:~!H!,1%%& call set L=%%hl:~!L!,1%%& set "dec=!dec!0x!h!!l!"& set /a i=%%c*16& set /a b=4 ))) ) & set /a o=b )
-  if !n! gtr 224 for /f "tokens=* delims=" %%. in ('%ff% "cmd /d /c echo;!dec!"') do set "URL=!URL!%%." & set dec=& set /a n=0 )
-if defined dec for /f "tokens=* delims=" %%. in ('%ff% "cmd /d /c echo;!dec!"') do set "URL=!URL!%%."
-del /f /q ~h?.tmp >nul 2>nul& popd& endlocal& set "URL=%URL%"& exit /b
-
 :dec_url brute url percent decoding by AveYo
 set ".=%URL:!=}%"&setlocal enabledelayedexpansion& rem brute url percent decoding
 set ".=!.:%%={!" &set ".=!.:{3A=:!" &set ".=!.:{2F=/!" &set ".=!.:{3F=?!" &set ".=!.:{23=#!" &set ".=!.:{5B=[!" &set ".=!.:{5D=]!"
 set ".=!.:{40=@!"&set ".=!.:{21=}!" &set ".=!.:{24=$!" &set ".=!.:{26=&!" &set ".=!.:{27='!" &set ".=!.:{28=(!" &set ".=!.:{29=)!"
 set ".=!.:{2A=*!"&set ".=!.:{2B=+!" &set ".=!.:{2C=,!" &set ".=!.:{3B=;!" &set ".=!.:{3D==!" &set ".=!.:{25=%%!"&set ".=!.:{20= !"
-rem set ",=!.:%%=!" & if "!,!" neq "!.!" endlocal& set "URL=%.:}=!%" & call :dec_url
+set ".=!.:{=%%!" &rem set ",=!.:%%=!" & if "!,!" neq "!.!" endlocal& set "URL=%.:}=!%" & call :dec_url
 endlocal& set "URL=%.:}=!%" & exit /b
 rem done
 
