@@ -1,15 +1,16 @@
 
-### ChrEdgeFkOff - redirect microsoft-edge: url from startmenu/help to the default browser  
-[ChrEdgeFkOff.cmd](ChrEdgeFkOff.cmd)  
+### OpenWebSearch - redirect microsoft-edge: url from startmenu/help to the default browser  
+[OpenWebSearch.cmd](OpenWebSearch.cmd)  
 **since v4 works even with Edge fully uninstalled!**  
 _if Edge is already removed, install Edge Stable, then remove it via Edge_Removal.bat (to preserve a small stub)_  
 supports command line parameters: `install` or `remove`  
 since v6 generate a pure batch script to prevent lame AVs false-positives  
+rebranded ChrEdgeFkOff
 
 
 ### Edge Removal  
 [Edge_Removal.bat](Edge_Removal.bat)  
-already includes ChrEdgeFkOff; `$also_remove_webview` = `1` (set to `0` to skip it)  
+already includes OpenWebSearch; `$also_remove_webview` = `1` (set to `0` to skip it)  
 
 ---
 
