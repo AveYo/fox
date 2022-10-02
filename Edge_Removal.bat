@@ -4,7 +4,7 @@ sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
 
 $also_remove_webview = 1
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.08.23'
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.10.02'
 ## targets
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge")
 if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "Win32WebViewHost"}
@@ -27,10 +27,10 @@ $setup = @(); $bho = @(); "LocalApplicationData","ProgramFilesX86","ProgramFiles
   $setup += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\setup.exe') -rec -ea 0
   $bho += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\ie_to_edge_stub.exe') -rec -ea 0
 }
-## export ChrEdgeFkOff innovative redirector
-foreach ($b in $bho) { if (test-path $b) { copy $b "$env:ProgramData\ie_to_edge_stub.exe" -force -ea 0; break } }
+## export OpenWebSearch innovative redirector
+foreach ($b in $bho) { if (test-path $b) { copy $b "$env:Public\ie_to_edge_stub.exe" -force -ea 0; break } }
 ## shut edge down
-foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
+foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
 ## clear appx uninstall block and remove
 $provisioned = get-appxprovisionedpackage -online; $appxpackage = get-appxpackage -allusers
 $store = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'; $store_reg = $store.replace(':','')
@@ -54,7 +54,7 @@ foreach ($choice in $remove_appx) { if ('' -eq $choice.Trim()) {continue}
   }
 }
 ## shut edge down, again
-foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
+foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
 ## brute-run found Edge setup.exe with uninstall args
 $purge = '--uninstall --system-level --force-uninstall'
 if ($also_remove_webview -eq 1) { foreach ($s in $setup) { try{ start -wait $s -args "--msedgewebview $purge" } catch{} } }
@@ -65,33 +65,32 @@ foreach ($i in $remove_appx) {
   dir "$store\Deleted\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
 }
 
-## add ChrEdgeFkOff to redirect microsoft-edge: anti-competitive links to the default browser
+## add OpenWebSearch to redirect microsoft-edge: anti-competitive links to the default browser
 $IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
 $MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
 $Headless_by_AveYo = """$env:systemroot\system32\conhost.exe"" --headless" # still innovating
 cmd /c "reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v ""URL Protocol"" /d """" >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v NoOpenWith /d """" >nul"
-cmd /c "reg add HKCR\microsoft-edge\shell\open\command /f /ve /d ""%ProgramData%\ie_to_edge_stub.exe %1"" >nul"
+cmd /c "reg add HKCR\microsoft-edge\shell\open\command /f /ve /d ""%Public%\ie_to_edge_stub.exe %1"" >nul"
 cmd /c "reg add HKCR\MSEdgeHTM /f /v NoOpenWith /d """" >nul"
-cmd /c "reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d ""%ProgramData%\ie_to_edge_stub.exe %1"" >nul"
+cmd /c "reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d ""%Public%\ie_to_edge_stub.exe %1"" >nul"
 cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe"" /f /v UseFilter /d 1 /t reg_dword >nul >nul"
-cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v FilterFullPath /d ""%ProgramData%\ie_to_edge_stub.exe"" >nul"
-cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v Debugger /d ""$Headless_by_AveYo %ProgramData%\ChrEdgeFkOff.cmd"" >nul"
+cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v FilterFullPath /d ""%Public%\ie_to_edge_stub.exe"" >nul"
+cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v Debugger /d ""$Headless_by_AveYo %Public%\OpenWebSearch.cmd"" >nul"
 cmd /c "reg add ""$IFEO\msedge.exe"" /f /v UseFilter /d 1 /t reg_dword >nul"
 cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v FilterFullPath /d ""$MSEP\msedge.exe"" >nul"
-cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$Headless_by_AveYo %ProgramData%\ChrEdgeFkOff.cmd"" >nul"
+cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$Headless_by_AveYo %Public%\OpenWebSearch.cmd"" >nul"
 
-$ChrEdgeFkOff = @$
-@title ChrEdgeFkOff V9 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
-rem PoS Defender started screaming about the former vbs version, so now this window will flash briefly. V7: not anymore ;)
+$OpenWebSearch = @$
+@title OpenWebSearch V1 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
-if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove ChrEdgeFkOff script. & pause & exit /b
+if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b
 call :reg_var "HKCR\%ProgID%\shell\open\command" "" Browser
 set Choice=& for %%. in (%Browser%) do if not defined Choice set "Choice=%%~."
 call :reg_var "HKCR\MSEdgeMHT\shell\open\command" "" FallBack
-set ChrEdge=& for %%. in (%FallBack%) do if not defined ChrEdge set "ChrEdge=%%~."
-set "URI=" & set "URL=" & set "NOOP=" & set "PassTrough=%ChrEdge:msedge=chredge%"
+set "Edge=" & for %%. in (%FallBack%) do if not defined Edge set "Edge=%%~."
+set "URI=" & set "URL=" & set "NOOP=" & set "PassTrough=%Edge:msedge=edge%"
 set "CLI=%CMDCMDLINE:"=``% "
 if defined CLI set "CLI=%CLI:*ie_to_edge_stub.exe`` =%"
 if defined CLI set "CLI=%CLI:*ie_to_edge_stub.exe =%"
@@ -113,10 +112,10 @@ call :dec_url
 start "" "%Choice%" "%URL%" & exit /b
 
 :reg_var [USAGE] call :reg_var "HKCU\Volatile Environment" value-or-"" variable [extra options]
-set "reg_var=" & set reg_var/=/v %2& if %2=="" set reg_var/=/ve& rem AveYo, v2: support localized empty value names
-for /f "tokens=* delims=" %%V in ('reg query "%~1" %reg_var/% /z /se "," %4 %5 %6 %7 %8 %9 2^>nul') do set "reg_var=%%V"
-set "reg_var/=" & if %2=="" if defined reg_var set "reg_var=%reg_var:*)    =%"
-if not defined reg_var (set "%~3=" & exit /b) else set "%~3=%reg_var:*)    =%" & set reg_var=& exit /b
+set {var}=& set {reg}=reg query "%~1" /v %2 /z /se "," /f /e& if %2=="" set {reg}=reg query "%~1" /ve /z /se "," /f /e
+for /f "skip=2 tokens=* delims=" %%V in ('%{reg}% %4 %5 %6 %7 %8 %9 2^>nul') do if not defined {var} set "{var}=%%V"
+if not defined {var} (set {reg}=& set "%~3="& exit /b) else if %2=="" set "{var}=%{var}:*)    =%"& rem AveYo: v3
+if not defined {var} (set {reg}=& set "%~3="& exit /b) else set {reg}=& set "%~3=%{var}:*)    =%"& set {var}=& exit /b
 
 :dec_url brute url percent decoding by AveYo
 set ".=%URL:!=}%"&setlocal enabledelayedexpansion& rem brute url percent decoding
@@ -128,17 +127,15 @@ endlocal& set "URL=%.:}=!%" & exit /b
 rem done
 
 $@
-[io.file]::WriteAllText("$env:ProgramData\ChrEdgeFkOff.cmd",$ChrEdgeFkOff) >''
+[io.file]::WriteAllText("$env:Public\OpenWebSearch.cmd",$OpenWebSearch) >''
 
-## refresh explorer
-kill -name 'sihost' -force
-
-echo "`n EDGE REMOVED! IF YOU NEED TO SETUP ANOTHER BROWSER, ENTER: `n"
-write-host -fore green @$
- $ffsetup='https://download.mozilla.org/?product=firefox-latest&os=win';
- $firefox="$([Environment]::GetFolderPath('Desktop'))\FirefoxSetup.exe";
- (new-object System.Net.WebClient).DownloadFile($ffsetup,$firefox); start $firefox
-$@;''
+function global:getfirefox {
+  $ffsetup='https://download.mozilla.org/?product=firefox-latest&os=win';
+  $firefox="$([Environment]::GetFolderPath('Desktop'))\FirefoxSetup.exe";
+  Invoke-WebRequest $ffsetup -OutFile $firefox; start $firefox
+}
+$getfirefox = "$([char]27)[38;2;255;165;0m getfirefox "
+write-host -nonew -fore green -back black "`n EDGE REMOVED! NEED ANOTHER BROWSER? ENTER:"; write-host -back black "$getfirefox"
 
 ## ask to run script as admin
 '@.replace("$@","'@").replace("@$","@'") -force -ea 0;
