@@ -4,7 +4,7 @@ sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
 
 $also_remove_webview = 1
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.10.02'
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.10.03'
 ## targets
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge")
 if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "Win32WebViewHost"}
@@ -73,7 +73,8 @@ del "$desktop\Microsoft Edge.lnk" -force -ea 0
 ## add OpenWebSearch to redirect microsoft-edge: anti-competitive links to the default browser
 $IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
 $MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
-$Headless_by_AveYo = """$env:systemroot\system32\conhost.exe"" --headless" # still innovating
+$W = ('--headless','--width 1 --height 1 cmd /d /c start /min')[([environment]::OSVersion.Version.Build) -gt 25179]
+$CMD = "$env:systemroot\system32\conhost.exe $W" # AveYo: see Terminal issue #13914
 cmd /c "reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v ""URL Protocol"" /d """" >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v NoOpenWith /d """" >nul"
@@ -82,13 +83,13 @@ cmd /c "reg add HKCR\MSEdgeHTM /f /v NoOpenWith /d """" >nul"
 cmd /c "reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d ""%Public%\ie_to_edge_stub.exe %1"" >nul"
 cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe"" /f /v UseFilter /d 1 /t reg_dword >nul >nul"
 cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v FilterFullPath /d ""%Public%\ie_to_edge_stub.exe"" >nul"
-cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v Debugger /d ""$Headless_by_AveYo %Public%\OpenWebSearch.cmd"" >nul"
+cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v Debugger /d ""$CMD %Public%\OpenWebSearch.cmd"" >nul"
 cmd /c "reg add ""$IFEO\msedge.exe"" /f /v UseFilter /d 1 /t reg_dword >nul"
 cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v FilterFullPath /d ""$MSEP\msedge.exe"" >nul"
-cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$Headless_by_AveYo %Public%\OpenWebSearch.cmd"" >nul"
+cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$CMD %Public%\OpenWebSearch.cmd"" >nul"
 
 $OpenWebSearch = @$
-@title OpenWebSearch V1 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+@title OpenWebSearch V2 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b
 call :reg_var "HKCR\%ProgID%\shell\open\command" "" Browser
@@ -114,7 +115,8 @@ set "URL=http%URL:*http=%"
 set "FIX=%URL:~-2%"
 if defined URL if "%FIX%"=="``" set "URL=%URL:~0,-2%"
 call :dec_url
-start "" "%Choice%" "%URL%" & exit /b
+start "" "%Choice%" "%URL%"
+exit
 
 :reg_var [USAGE] call :reg_var "HKCU\Volatile Environment" value-or-"" variable [extra options]
 set {var}=& set {reg}=reg query "%~1" /v %2 /z /se "," /f /e& if %2=="" set {reg}=reg query "%~1" /ve /z /se "," /f /e
