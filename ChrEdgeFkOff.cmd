@@ -13,6 +13,9 @@
 for /f "delims=:" %%s in ('echo;prompt $h$s$h:^|cmd /d') do set "|=%%s"&set ">>=\..\c nul&set /p s=%%s%%s%%s%%s%%s%%s%%s<nul&popd"
 set "<=pushd "%appdata%"&2>nul findstr /c:\ /a" &set ">=%>>%&echo;" &set "|=%|:~0,1%" &set /p s=\<nul>"%appdata%\c"
 
+::# use dedicated C:\Scripts path due to Sigma rules FUD
+for %%W in ("%SystemDrive%\Scripts") do set DIR=%%~W& mkdir %%W >nul 2>nul & rem attrib +H %%W /d >nul 2>nul
+
 ::# toggle when launched without arguments, else jump to arguments: "install" or "remove"
 set CLI=%*&(set IFEO=HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options&set MSE=&set BHO=&set ProgID=)
 call :reg_var "HKCR\MSEdgeMHT\shell\open\command" "" ProgID
@@ -26,31 +29,31 @@ if /i "%~1"=="install" (goto install) else if /i "%~1"=="remove" goto remove
 :install
 if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%*ie_to_edge_stub.exe" 2^>nul') do set "BHO=%%~fW"
 if not exist "%MSEPath%edge.exe" if exist "%MSE%" mklink /h "%MSEPath%edge.exe" "%MSE%" >nul
-for %%W in (ie_to_edge_stub.exe) do if exist "%ProgramData%\%%W" copy /y "%ProgramData%\%%W" "%SystemRoot%\" >nul 2>nul
-for %%W in (ie_to_edge_stub.exe) do if exist "%Public%\%%W" copy /y "%Public%\%%W" "%SystemRoot%\" >nul 2>nul
-if defined BHO copy /y "%BHO%" "%SystemRoot%\ie_to_edge_stub.exe" >nul 2>nul
-call :export OpenWebSearch_cmd > "%SystemRoot%\OpenWebSearch.cmd"
+for %%W in (ie_to_edge_stub.exe) do if exist "%ProgramData%\%%W" copy /y "%ProgramData%\%%W" "%DIR%\" >nul 2>nul
+for %%W in (ie_to_edge_stub.exe) do if exist "%Public%\%%W" copy /y "%Public%\%%W" "%DIR%\" >nul 2>nul
+if defined BHO copy /y "%BHO%" "%DIR%\ie_to_edge_stub.exe" >nul 2>nul
+call :export OpenWebSearch_cmd > "%DIR%\OpenWebSearch.cmd"
 set W=--headless& for /f "tokens=6 delims=[]. " %%b in ('ver') do if %%b gtr 25179 set W=--width 1 --height 1 cmd /d /c start /min
 set CMD=%systemroot%\system32\conhost.exe %W%& rem AveYo: see Terminal issue #13914
 reg add "HKCR\microsoft-edge" /f /ve /d URL:microsoft-edge >nul
 reg add "HKCR\microsoft-edge" /f /v "URL Protocol" /d "" >nul
 reg add "HKCR\microsoft-edge" /f /v "NoOpenWith" /d "" >nul
-reg add "HKCR\microsoft-edge\shell\open\command" /f /ve /d "%SystemRoot%\ie_to_edge_stub.exe %%1" >nul
+reg add "HKCR\microsoft-edge\shell\open\command" /f /ve /d "%DIR%\ie_to_edge_stub.exe %%1" >nul
 reg add "HKCR\MSEdgeHTM" /f /v "NoOpenWith" /d "" >nul
-reg add "HKCR\MSEdgeHTM\shell\open\command" /f /ve /d "%SystemRoot%\ie_to_edge_stub.exe %%1" >nul
+reg add "HKCR\MSEdgeHTM\shell\open\command" /f /ve /d "%DIR%\ie_to_edge_stub.exe %%1" >nul
 reg add "%IFEO%\ie_to_edge_stub.exe" /f /v UseFilter /d 1 /t reg_dword >nul >nul
-reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v FilterFullPath /d "%SystemRoot%\ie_to_edge_stub.exe" >nul
-reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v Debugger /d "%CMD% %SystemRoot%\OpenWebSearch.cmd" >nul
+reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v FilterFullPath /d "%DIR%\ie_to_edge_stub.exe" >nul
+reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v Debugger /d "%CMD% %DIR%\OpenWebSearch.cmd" >nul
 reg add "%IFEO%\msedge.exe" /f /v UseFilter /d 1 /t reg_dword >nul
 reg add "%IFEO%\msedge.exe\0" /f /v FilterFullPath /d "%MSE%" >nul
-reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "%CMD% %SystemRoot%\OpenWebSearch.cmd" >nul
+reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "%CMD% %DIR%\OpenWebSearch.cmd" >nul
 if "%CLI%" neq "" exit /b
 echo;& %<%:f0 " OpenWebSearch V2 "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
 timeout /t 7
 exit /b
 
 :remove
-del /f /q "%SystemRoot%\OpenWebSearch.*" "%MSEPath%edge.exe" "%ProgramData%\ChrEdgeFkOff.*" "%MSEPath%chredge.exe" >nul 2>nul
+del /f /q "%DIR%\OpenWebSearch.*" "%MSEPath%edge.exe" "%ProgramData%\ChrEdgeFkOff.*" "%MSEPath%chredge.exe" >nul 2>nul
 reg delete HKCR\microsoft-edge /f /v "NoOpenWith" >nul 2>nul
 reg add HKCR\microsoft-edge\shell\open\command /f /ve /d "\"%MSE%\" --single-argument %%1" >nul
 reg delete HKCR\MSEdgeHTM /f /v "NoOpenWith" >nul 2>nul
