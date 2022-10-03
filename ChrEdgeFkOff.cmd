@@ -1,9 +1,9 @@
 @(set '(=)||' <# lean and mean cmd / powershell hybrid #> @'
 
-::# OpenWebSearch V1 - open desktop & start menu web search, widgets links or help in your chosen default browser - by AveYo
+::# OpenWebSearch V2 - open desktop & start menu web search, widgets links or help in your chosen default browser - by AveYo
 ::# if Edge is already removed, try installing Edge Stable, then remove it via Edge_Removal.bat
 
-@echo off & title OpenWebSearch || AveYo 2022.10.02                                   yes, this is a rebrand of ChrEdgeFkOff
+@echo off & title OpenWebSearch || AveYo 2022.10.03                                   yes, this is a rebrand of ChrEdgeFkOff
 
 ::# elevate with native shell by AveYo
 >nul reg add hkcu\software\classes\.Admin\shell\runas\command /f /ve /d "cmd /x /d /r set \"f0=%%2\"& call \"%%2\" %%3"& set _= %*
@@ -28,7 +28,8 @@ if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%*ie_to_edg
 if not exist "%MSEPath%edge.exe" if exist "%MSE%" mklink /h "%MSEPath%edge.exe" "%MSE%" >nul
 if defined BHO copy /y "%BHO%" "%Public%\ie_to_edge_stub.exe" >nul 2>nul
 call :export OpenWebSearch_cmd > "%Public%\OpenWebSearch.cmd"
-set "Headless_by_AveYo=%systemroot%\system32\conhost.exe --headless" & rem still innovating
+set W=--headless& for /f "tokens=6 delims=[]. " %%b in ('ver') do if %%b gtr 25179 set W=--width 1 --height 1 cmd /d /c start /min
+set CMD=%systemroot%\system32\conhost.exe %W%& rem AveYo: see Terminal issue #13914
 reg add "HKCR\microsoft-edge" /f /ve /d URL:microsoft-edge >nul
 reg add "HKCR\microsoft-edge" /f /v "URL Protocol" /d "" >nul
 reg add "HKCR\microsoft-edge" /f /v "NoOpenWith" /d "" >nul
@@ -37,12 +38,12 @@ reg add "HKCR\MSEdgeHTM" /f /v "NoOpenWith" /d "" >nul
 reg add "HKCR\MSEdgeHTM\shell\open\command" /f /ve /d "\"%Public%\ie_to_edge_stub.exe\" %%1" >nul
 reg add "%IFEO%\ie_to_edge_stub.exe" /f /v UseFilter /d 1 /t reg_dword >nul >nul
 reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v FilterFullPath /d "%Public%\ie_to_edge_stub.exe" >nul
-reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v Debugger /d "%Headless_by_AveYo% \"%Public%\OpenWebSearch.cmd\"" >nul
+reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v Debugger /d "%CMD% \"%Public%\OpenWebSearch.cmd\"" >nul
 reg add "%IFEO%\msedge.exe" /f /v UseFilter /d 1 /t reg_dword >nul
 reg add "%IFEO%\msedge.exe\0" /f /v FilterFullPath /d "%MSE%" >nul
-reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "%Headless_by_AveYo% \"%Public%\OpenWebSearch.cmd\"" >nul
+reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "%CMD% \"%Public%\OpenWebSearch.cmd\"" >nul
 if "%CLI%" neq "" exit /b
-echo;& %<%:f0 " OpenWebSearch V1 "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
+echo;& %<%:f0 " OpenWebSearch V2 "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
 timeout /t 7
 exit /b
 
@@ -56,7 +57,7 @@ reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d "\"%MSE%\" --single-argument
 reg delete "%IFEO%\ie_to_edge_stub.exe" /f >nul 2>nul
 reg delete "%IFEO%\msedge.exe" /f >nul 2>nul
 if "%CLI%" neq "" exit /b
-echo;& %<%:f0 " OpenWebSearch V1 "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
+echo;& %<%:f0 " OpenWebSearch V2 "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
 timeout /t 7
 exit /b
 
@@ -92,7 +93,8 @@ set "URL=http%URL:*http=%"
 set "FIX=%URL:~-2%"
 if defined URL if "%FIX%"=="``" set "URL=%URL:~0,-2%"
 call :dec_url
-start "" "%Choice%" "%URL%" & exit /b
+start "" "%Choice%" "%URL%"
+exit
 
 :reg_var [USAGE] call :reg_var "HKCU\Volatile Environment" value-or-"" variable [extra options]
 set {var}=& set {reg}=reg query "%~1" /v %2 /z /se "," /f /e& if %2=="" set {reg}=reg query "%~1" /ve /z /se "," /f /e
