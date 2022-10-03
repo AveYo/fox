@@ -28,10 +28,10 @@ $setup = @(); $bho = @(); $bho += "$env:ProgramData\ie_to_edge_stub.exe"; $bho +
   $setup += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\setup.exe') -rec -ea 0
   $bho += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\ie_to_edge_stub.exe') -rec -ea 0
 }
-## use dedicated path due to retarded Sigma rules FUD
-$null = mkdir $env:ProgramFiles\AveYo -ea 0
+## use dedicated C:\Scripts path due to Sigma rules FUD
+$DIR = "$env:SystemDrive\Scripts"; $null = mkdir $DIR -ea 0; # $null = attrib +H $DIR /d
 ## export OpenWebSearch innovative redirector
-foreach ($b in $bho) { if (test-path $b) { copy $b "$env:SystemRoot\ie_to_edge_stub.exe" -force -ea 0; break } }
+foreach ($b in $bho) { if (test-path $b) { copy $b "$DIR\ie_to_edge_stub.exe" -force -ea 0; break } }
 ## shut edge down
 foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
 ## clear appx uninstall block and remove
@@ -81,15 +81,15 @@ $CMD = "$env:systemroot\system32\conhost.exe $W" # AveYo: see Terminal issue #13
 cmd /c "reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v ""URL Protocol"" /d """" >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v NoOpenWith /d """" >nul"
-cmd /c "reg add HKCR\microsoft-edge\shell\open\command /f /ve /d ""$env:SystemRoot\ie_to_edge_stub.exe %1"" >nul"
+cmd /c "reg add HKCR\microsoft-edge\shell\open\command /f /ve /d ""$DIR\ie_to_edge_stub.exe %1"" >nul"
 cmd /c "reg add HKCR\MSEdgeHTM /f /v NoOpenWith /d """" >nul"
-cmd /c "reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d ""$env:SystemRoot\ie_to_edge_stub.exe %1"" >nul"
+cmd /c "reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d ""$DIR\ie_to_edge_stub.exe %1"" >nul"
 cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe"" /f /v UseFilter /d 1 /t reg_dword >nul >nul"
-cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v FilterFullPath /d ""$env:SystemRoot\ie_to_edge_stub.exe"" >nul"
-cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v Debugger /d ""$CMD $env:SystemRoot\OpenWebSearch.cmd"" >nul"
+cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v FilterFullPath /d ""$DIR\ie_to_edge_stub.exe"" >nul"
+cmd /c "reg add ""$IFEO\ie_to_edge_stub.exe\0"" /f /v Debugger /d ""$CMD $DIR\OpenWebSearch.cmd"" >nul"
 cmd /c "reg add ""$IFEO\msedge.exe"" /f /v UseFilter /d 1 /t reg_dword >nul"
 cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v FilterFullPath /d ""$MSEP\msedge.exe"" >nul"
-cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$CMD $env:SystemRoot\OpenWebSearch.cmd"" >nul"
+cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$CMD $DIR\OpenWebSearch.cmd"" >nul"
 
 $OpenWebSearch = @$
 @title OpenWebSearch V2 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
@@ -137,7 +137,7 @@ endlocal& set "URL=%.:}=!%" & exit /b
 rem done
 
 $@
-[io.file]::WriteAllText("$env:SystemRoot\OpenWebSearch.cmd",$OpenWebSearch) >''
+[io.file]::WriteAllText("$DIR\OpenWebSearch.cmd", $OpenWebSearch) >''
 ## cleanup
 $cleanup = gp 'Registry::HKEY_Users\S-1-5-21*\Volatile*' Edge_Removal -ea 0
 if ($cleanup) {rp $cleanup.PSPath Edge_Removal -force -ea 0}
