@@ -26,6 +26,7 @@ if /i "%~1"=="install" (goto install) else if /i "%~1"=="remove" goto remove
 :install
 if defined MSEPath for /f "delims=" %%W in ('dir /o:D /b /s "%MSEPath%*ie_to_edge_stub.exe" 2^>nul') do set "BHO=%%~fW"
 if not exist "%MSEPath%edge.exe" if exist "%MSE%" mklink /h "%MSEPath%edge.exe" "%MSE%" >nul
+if exist "%ProgramData%\ie_to_edge_stub.exe" copy /y "%ProgramData%\ie_to_edge_stub.exe" "%Public%\ie_to_edge_stub.exe" >nul 2>nul
 if defined BHO copy /y "%BHO%" "%Public%\ie_to_edge_stub.exe" >nul 2>nul
 call :export OpenWebSearch_cmd > "%Public%\OpenWebSearch.cmd"
 set W=--headless& for /f "tokens=6 delims=[]. " %%b in ('ver') do if %%b gtr 25179 set W=--width 1 --height 1 cmd /d /c start /min
@@ -67,7 +68,7 @@ set [=&for /f "delims=:" %%s in ('findstr /nbrc:":%~1:\[" /c:":%~1:\]" "%~f0"')d
 <"%~f0" ((for /l %%i in (0 1 %[%) do set /p =)&for /l %%i in (%[% 1 %]%) do (set txt=&set /p txt=&echo(!txt!)) &endlocal &exit /b
 
 :OpenWebSearch_cmd:[
-@title OpenWebSearch V1 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+@title OpenWebSearch V2 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b
 call :reg_var "HKCR\%ProgID%\shell\open\command" "" Browser
