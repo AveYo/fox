@@ -28,12 +28,12 @@ $setup = @(); $bho = @(); $bho += "$env:ProgramData\ie_to_edge_stub.exe"; $bho +
   $setup += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\setup.exe') -rec -ea 0
   $bho += dir $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\ie_to_edge_stub.exe') -rec -ea 0
 }
-## use dedicated C:\Scripts path due to Sigma rules FUD
-$DIR = "$env:SystemDrive\Scripts"; $null = mkdir $DIR -ea 0; # $null = attrib +H $DIR /d
-## export OpenWebSearch innovative redirector
-foreach ($b in $bho) { if (test-path $b) { copy $b "$DIR\ie_to_edge_stub.exe" -force -ea 0; break } }
 ## shut edge down
 foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
+## use dedicated C:\Scripts path due to Sigma rules FUD
+$DIR = "$env:SystemDrive\Scripts"; $null = mkdir $DIR -ea 0
+## export OpenWebSearch innovative redirector
+foreach ($b in $bho) { if (test-path $b) { try {copy $b "$DIR\ie_to_edge_stub.exe" -force -ea 0} catch{} } }
 ## clear appx uninstall block and remove
 $provisioned = get-appxprovisionedpackage -online; $appxpackage = get-appxpackage -allusers
 $store = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'; $store_reg = $store.replace(':','')
@@ -76,8 +76,8 @@ del "$desktop\Microsoft Edge.lnk" -force -ea 0
 ## add OpenWebSearch to redirect microsoft-edge: anti-competitive links to the default browser
 $IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
 $MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
-$W = ('--headless','--width 1 --height 1 cmd /d /c start /min')[([environment]::OSVersion.Version.Build) -gt 25179]
-$CMD = "$env:systemroot\system32\conhost.exe $W" # AveYo: see Terminal issue #13914
+$MIN = ('--headless','--width 1 --height 1')[([environment]::OSVersion.Version.Build) -gt 25179]
+$CMD = "$env:systemroot\system32\conhost.exe $MIN" # AveYo: minimize prompt - see Terminal issue #13914
 cmd /c "reg add HKCR\microsoft-edge /f /ve /d URL:microsoft-edge >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v ""URL Protocol"" /d """" >nul"
 cmd /c "reg add HKCR\microsoft-edge /f /v NoOpenWith /d """" >nul"
@@ -92,7 +92,8 @@ cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v FilterFullPath /d ""$MSEP\msedge.ex
 cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$CMD $DIR\OpenWebSearch.cmd"" >nul"
 
 $OpenWebSearch = @$
-@title OpenWebSearch V2 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+@title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+for /f %%E in ('"prompt $E$S& for %%e in (1) do rem"') do echo;%%E[2t 2>nul & rem AveYo: minimize prompt
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b
 call :reg_var "HKCR\%ProgID%\shell\open\command" "" Browser
