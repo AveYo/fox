@@ -1,6 +1,6 @@
 @(set '(=)||' <# lean and mean cmd / powershell hybrid #> @'
 
-::# OpenWebSearch V2 - open desktop & start menu web search, widgets links or help in your chosen default browser - by AveYo
+::# OpenWebSearch Redux - open desktop & start menu web search, widgets links or help in your chosen default browser - by AveYo
 ::# if Edge is already removed, try installing Edge Stable, then remove it via Edge_Removal.bat
 
 @echo off & title OpenWebSearch || AveYo 2022.10.03                                   yes, this is a rebrand of ChrEdgeFkOff
@@ -14,7 +14,7 @@ for /f "delims=:" %%s in ('echo;prompt $h$s$h:^|cmd /d') do set "|=%%s"&set ">>=
 set "<=pushd "%appdata%"&2>nul findstr /c:\ /a" &set ">=%>>%&echo;" &set "|=%|:~0,1%" &set /p s=\<nul>"%appdata%\c"
 
 ::# use dedicated C:\Scripts path due to Sigma rules FUD
-for %%W in ("%SystemDrive%\Scripts") do set DIR=%%~W& mkdir %%W >nul 2>nul & rem attrib +H %%W /d >nul 2>nul
+for %%W in ("%SystemDrive%\Scripts") do set DIR=%%~W& mkdir %%W >nul 2>nul
 
 ::# toggle when launched without arguments, else jump to arguments: "install" or "remove"
 set CLI=%*&(set IFEO=HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options&set MSE=&set BHO=&set ProgID=)
@@ -33,8 +33,8 @@ for %%W in (ie_to_edge_stub.exe) do if exist "%ProgramData%\%%W" copy /y "%Progr
 for %%W in (ie_to_edge_stub.exe) do if exist "%Public%\%%W" copy /y "%Public%\%%W" "%DIR%\" >nul 2>nul
 if defined BHO copy /y "%BHO%" "%DIR%\ie_to_edge_stub.exe" >nul 2>nul
 call :export OpenWebSearch_cmd > "%DIR%\OpenWebSearch.cmd"
-set W=--headless& for /f "tokens=6 delims=[]. " %%b in ('ver') do if %%b gtr 25179 set W=--width 1 --height 1 cmd /d /c start /min
-set CMD=%systemroot%\system32\conhost.exe %W%& rem AveYo: see Terminal issue #13914
+set MIN=--headless& for /f "tokens=6 delims=[]. " %%b in ('ver') do if %%b gtr 25179 set MIN=--width 1 --height 1
+set CMD=%systemroot%\system32\conhost.exe %MIN%& rem AveYo: minimize prompt - see Terminal issue #13914
 reg add "HKCR\microsoft-edge" /f /ve /d URL:microsoft-edge >nul
 reg add "HKCR\microsoft-edge" /f /v "URL Protocol" /d "" >nul
 reg add "HKCR\microsoft-edge" /f /v "NoOpenWith" /d "" >nul
@@ -48,7 +48,7 @@ reg add "%IFEO%\msedge.exe" /f /v UseFilter /d 1 /t reg_dword >nul
 reg add "%IFEO%\msedge.exe\0" /f /v FilterFullPath /d "%MSE%" >nul
 reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "%CMD% %DIR%\OpenWebSearch.cmd" >nul
 if "%CLI%" neq "" exit /b
-echo;& %<%:f0 " OpenWebSearch V2 "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
+echo;& %<%:f0 " OpenWebSearch Redux "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
 timeout /t 7
 exit /b
 
@@ -61,7 +61,7 @@ reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d "\"%MSE%\" --single-argument
 reg delete "%IFEO%\ie_to_edge_stub.exe" /f >nul 2>nul
 reg delete "%IFEO%\msedge.exe" /f >nul 2>nul
 if "%CLI%" neq "" exit /b
-echo;& %<%:f0 " OpenWebSearch V2 "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
+echo;& %<%:f0 " OpenWebSearch Redux "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
 timeout /t 7
 exit /b
 
@@ -71,7 +71,8 @@ set [=&for /f "delims=:" %%s in ('findstr /nbrc:":%~1:\[" /c:":%~1:\]" "%~f0"')d
 <"%~f0" ((for /l %%i in (0 1 %[%) do set /p =)&for /l %%i in (%[% 1 %]%) do (set txt=&set /p txt=&echo(!txt!)) &endlocal &exit /b
 
 :OpenWebSearch_cmd:[
-@title OpenWebSearch V2 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+@title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+for /f %%E in ('"prompt $E$S& for %%e in (1) do rem"') do echo;%%E[2t 2>nul & rem AveYo: minimize prompt
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b
 call :reg_var "HKCR\%ProgID%\shell\open\command" "" Browser
@@ -115,32 +116,6 @@ set ".=!.:{=%%!" &rem set ",=!.:%%=!" & if "!,!" neq "!.!" endlocal& set "URL=%.
 endlocal& set "URL=%.:}=!%" & exit /b
 rem done
 :OpenWebSearch_cmd:]
-
-:dec_url64 brute url 64 decoding by AveYo - revised for speed
-setlocal enabledelayedexpansion& pushd "%Public%"& rem inspired by Aacini's string to hex and pizza's decode vbs
-set asc=& <nul set /p "=%URL%" >~h1.tmp& for %%. in (~h1.tmp) do fsutil file createnew ~h2.tmp %%~Z. >nul
-for /f "skip=1 tokens=2" %%. in ('fc /b ~h1.tmp ~h2.tmp') do set z=-1& set /a h=0x%%.& if !h! gtr 32 if !h! lss 127 (
-  (if !h! gtr 64 if !h! lss 92 set /a z=h-65) & (if !h! gtr 96 if !h! lss 124 set /a z=h-71)
-  (if !h! gtr 47 if !h! lss 59 set /a z=h +4) & (if !h! equ 45 set /a z=62) & (if !h! equ 47 set /a z=63) & set "asc=!asc! !z!" )
-set dec=&set URL=&set /a o=0& set /a b=0& set /a i=0& set hl=0123456789ABCDEF& set /a n=0& set ff=forfiles /m OpenWebSearch.cmd /c
-for %%c in (%asc%) do ( if %%c neq -1 ( ( if !o! equ 0 ( set /a i=%%c*4& set /a b=6 ) else (
-  if !o! equ 2 ( set /a i+=%%c   & set /a x=i%%256& set /a H=!x!/16& set /a L=!x!%%16& set /a n+=4
-    call set H=%%hl:~!H!,1%%& call set L=%%hl:~!L!,1%%& set "dec=!dec!0x!h!!l!"& set /a b=0 ) else (
-  if !o! equ 4 ( set /a i+=%%c/4 & set /a x=i%%256& set /a H=!x!/16& set /a L=!x!%%16& set /a n+=4
-    call set H=%%hl:~!H!,1%%& call set L=%%hl:~!L!,1%%& set "dec=!dec!0x!h!!l!"& set /a i=%%c*64& set /a b=2 ) else (
-  set /a i+=%%c/16& set /a x=i%%256& set /a H=!x!/16& set /a L=!x!%%16& set /a n+=4
-    call set H=%%hl:~!H!,1%%& call set L=%%hl:~!L!,1%%& set "dec=!dec!0x!h!!l!"& set /a i=%%c*16& set /a b=4 ))) ) & set /a o=b )
-  if !n! gtr 224 for /f "tokens=* delims=" %%. in ('%ff% "cmd /d /c echo;!dec!"') do set "URL=!URL!%%." & set dec=& set /a n=0 )
-if defined dec for /f "tokens=* delims=" %%. in ('%ff% "cmd /d /c echo;!dec!"') do set "URL=!URL!%%."
-del /f /q ~h?.tmp >nul 2>nul& popd& endlocal& set "URL=%URL%"& exit /b
-REM NO LONGER USED, KEPT HERE JUST IN CASE
-set "DIRECT=%URL:WS/redirect/=%"
-if "%URL%" equ "%DIRECT%" start "" "%Choice%" "%URL%" & exit /b
-set "REDIRECT=%URL:*&url=%"
-set "REDIRECT=%REDIRECT:~1%"
-set "REDIRECT="%REDIRECT:&=" %"
-set URL=& for %%. in (%REDIRECT%) do if not defined URL set "URL=%%~." & call :dec_url64
-start "" "%Choice%" "%URL%" & exit /b
 
 '@); $0 = "$env:temp\OpenWebSearch.cmd"; ${(=)||} -split "\r?\n" | out-file $0 -encoding default -force; & $0
 # press enter
