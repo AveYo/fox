@@ -4,7 +4,7 @@ sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
 
 $also_remove_webview = 1
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2023.07.06'
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2023.07.08'
 ## targets
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge")
 if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "Win32WebViewHost"}
@@ -12,17 +12,17 @@ if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remo
 $D1=[uri].module.gettype('System.Diagnostics.Process')."GetM`ethods"(42) |where {$_.Name -eq 'SetPrivilege'} #`:no-ev-warn
 'SeSecurityPrivilege','SeTakeOwnershipPrivilege','SeBackupPrivilege','SeRestorePrivilege'|foreach {$D1.Invoke($null, @("$_",2))}
 ## set useless policies
-foreach ($p in 'HKLM\SOFTWARE\Policies','HKLM\SOFTWARE') {
+foreach ($p in 'HKLM\SOFTWARE\Policies','HKLM\SOFTWARE','HKLM\SOFTWARE\WOW6432Node') {
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v InstallDefault /d 0 /t reg_dword >nul 2>nul"
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062} /d 0 /t reg_dword >nul 2>nul"
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5} /d 1 /t reg_dword >nul 2>nul"
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v DoNotUpdateToEdgeWithChromium /d 1 /t reg_dword >nul 2>nul"
 }
 $edgeupdate='Microsoft\EdgeUpdate\Clients\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
-foreach ($wow in '','\Wow6432Node') {
-  cmd /c "reg add ""HKLM\SOFTWARE${wow}\$edgeupdate\Commands\on-logon-autolaunch"" /f /v CommandLine /d systray.exe >nul 2>nul"
-  cmd /c "reg add ""HKLM\SOFTWARE${wow}\$edgeupdate\Commands\on-logon-startup-boost"" /f /v CommandLine /d systray.exe >nul 2>nul"
-  cmd /c "reg add ""HKLM\SOFTWARE${wow}\$edgeupdate\Commands\on-os-upgrade"" /f /v CommandLine /d systray.exe >nul 2>nul"
+foreach ($p in 'HKLM\SOFTWARE','HKLM\SOFTWARE\Wow6432Node') {
+  cmd /c "reg add ""$p\$edgeupdate\Commands\on-logon-autolaunch"" /f /v CommandLine /d systray.exe >nul 2>nul"
+  cmd /c "reg add ""$p\$edgeupdate\Commands\on-logon-startup-boost"" /f /v CommandLine /d systray.exe >nul 2>nul"
+  cmd /c "reg add ""$p\$edgeupdate\Commands\on-os-upgrade"" /f /v CommandLine /d systray.exe >nul 2>nul"
 }
 ## clear win32 uninstall block
 foreach ($hk in 'HKCU','HKLM') {foreach ($wow in '','\Wow6432Node') {foreach ($i in $remove_win32) {
@@ -64,12 +64,23 @@ foreach ($choice in $remove_appx) { if ('' -eq $choice.Trim()) {continue}
     foreach ($sid in $users) {cmd /c "reg delete ""$store_reg\EndOfLife\$sid\$PackageFullName"" /f >nul 2>nul"}
   }
 }
+
+## remove OpenWebSearch before running edge setup
+$IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
+$MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
+cmd /c "reg delete HKCR\microsoft-edge /f /v ""NoOpenWith"" >nul 2>nul"
+cmd /c "reg add HKCR\microsoft-edge\shell\open\command /f /ve /d ""\""$MSEP\msedge.exe\"" --single-argument %%1"" >nul"
+cmd /c "reg delete HKCR\MSEdgeHTM /f /v ""NoOpenWith"" >nul 2>nul"
+cmd /c "reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d ""\""$MSEP\msedge.exe\"" --single-argument %%1"" >nul"
+cmd /c "reg delete ""$IFEO\ie_to_edge_stub.exe"" /f >nul 2>nul"
+cmd /c "reg delete ""$IFEO\msedge.exe"" /f >nul 2>nul"
+
 ## shut edge down, again
 foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
 ## brute-run found Edge setup.exe with uninstall args
-$purge = '--uninstall --system-level --force-uninstall --delete-old-versions'
+$purge = '--uninstall --force-uninstall --system-level' # --delete-old-versions --channel=stable
 if ($also_remove_webview -eq 1) { foreach ($s in $setup) { try{ start -wait $s -args "--msedgewebview $purge" } catch{} } }
-foreach ($s in $setup) { try{ start -wait $s -args "--msedge --remove-msedge-registration $purge" } catch{} }
+foreach ($s in $setup) { try{ start -wait $s -args "--msedge $purge" } catch{} }
 
 ## prevent latest cumulative update (LCU) failing due to non-matching EndOfLife Edge entries
 foreach ($i in $remove_appx) {
@@ -81,7 +92,7 @@ $desktop = $([Environment]::GetFolderPath('Desktop')); $appdata = $([Environment
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Tombstones\Microsoft Edge.lnk" -force -ea 0
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk" -force -ea 0
 del "$desktop\Microsoft Edge.lnk" -force -ea 0
-del "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk" -force -ea 0
+#del "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk" -force -ea 0
 #pushd "${env:ProgramFiles(x86)}\Microsoft"
 #rmdir -LiteralPath 'Edge','EdgeCore','EdgeUpdate' -recurse -force -ea 0
 
