@@ -1,9 +1,9 @@
-/// Create in Firefox-Install-Directory/UserChrome.js - a minimal bootstrap to run javascript snippets on Firefox startup - by AveYo
+/// Create in Firefox-Install-Directory/UserChrome.js - a minimal bootstrap to run javascript snippets on Firefox startup - by AveYo, 2023.08.25
 /// Requires: Firefox-Install-Directory/defaults/pref/enable-UserChrome.js
 try {
   let { classes: Cc, interfaces: Ci, manager: Cm } = Components;
-  const { XPCOMUtils } = Components.utils.import('resource://gre/modules/XPCOMUtils.jsm');
-  XPCOMUtils.defineLazyModuleGetters(this, { Services: "resource://gre/modules/Services.jsm" });
+  const XPCOMUtils = globalThis.XPCOMUtils || Components.utils.import('resource://gre/modules/XPCOMUtils.jsm').XPCOMUtils;
+  const Services = globalThis.Services || Components.utils.import("resource://gre/modules/Services.jsm").Services;
   function UserChromeJS() { Services.obs.addObserver(this, 'chrome-document-global-created', false); }
   UserChromeJS.prototype = { observe:function(s) {s.addEventListener('DOMContentLoaded', this, {once:true});}, handleEvent:function(evt) {
     let document = evt.originalTarget; let window = document.defaultView; let location = window.location; let console = window.console;
@@ -71,7 +71,7 @@ UC.Addressbar = {
         let result = this.getResultAtIndex(0);
         if (result?.payload.suggestion || result?.payload.query) {this.clearSelection();}
       }
-    }; 
+    };
     this.UrlbarInput.prototype.handleCommand = function (event = null) {
       let element = this.view.selectedElement;
       let result = this.view.getResultFromElement(element);
