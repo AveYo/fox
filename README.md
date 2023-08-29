@@ -1,3 +1,11 @@
+### Edge Removal redux! 
+[Edge_Removal.bat](Edge_Removal.bat)  
+`$also_remove_webview = 1` (set to `0` to not also remove EdgeWebView2 and Widgets)  
+after removal can enter into console: `firefox` to quickly install it, or `edge` and `webview` to reinstall them  
+hybrid script, can just copy-paste into powershell  
+already includes OpenWebSearch  
+
+---
 
 ### OpenWebSearch - redirect microsoft-edge: url from startmenu/help to the default browser  
 [OpenWebSearch.cmd](OpenWebSearch.cmd)  
@@ -5,12 +13,8 @@
 _if Edge is already removed, install Edge Stable, then remove it via Edge_Removal.bat (to preserve a small stub)_  
 supports command line parameters: `install` or `remove`  
 since v6 generate a pure batch script to prevent lame AVs false-positives  
+hybrid script, can just copy-paste into powershell  
 rebranded ChrEdgeFkOff
-
-
-### Edge Removal  
-[Edge_Removal.bat](Edge_Removal.bat)  
-already includes OpenWebSearch; `$also_remove_webview` = `1` (set to `0` to skip it)  
 
 ---
 
