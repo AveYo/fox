@@ -4,9 +4,9 @@ sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
 
 $also_remove_webview = 1
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2023.09.08'
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2023.09.09'
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge"); $skip = @() # @("DevTools")
-if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "WebExperience"}
+if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "WebExperience","Win32WebViewHost"}
 
 ## 1 bonus! enter into powershell console: firefox / edge / webview to install a browser / reinstall edge or webview after removal
 function global:firefox { $url = 'https://download.mozilla.org/?product=firefox-stub'
@@ -56,6 +56,7 @@ function global:prepare_edge {
 function global:prepare_webview {
   $cfg = @{Register=$true; ForceApplicationShutdown=$true; ForceUpdateFromAnyVersion=$true; DisableDevelopmentMode=$true} 
   dir "$env:ProgramFiles\WindowsApps\MicrosoftWindows.Client.WebExperience*\AppxManifest.xml" -rec -ea 0 | Add-AppxPackage @cfg
+  dir "$env:SystemRoot\SystemApps\Microsoft.Win32WebViewHost*\AppxManifest.xml" -rec -ea 0 | Add-AppxPackage @cfg
   kill -name explorer -ea 0; if ((get-process -name 'explorer' -ea 0) -eq $null) {start explorer}
 }
 
@@ -118,7 +119,13 @@ foreach ($setup in $edges) { if (test-path $setup) {
 
 ## 6 extra cleanup
 foreach ($PF in $env:ProgramFiles,${env:ProgramFiles(x86)}) { if (test-path "$PF\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe") {
+  write-host "$PF\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe /uninstall"
   start -wait "$PF\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe" -args '/uninstall'
+  do {sleep 3} while ((get-process -name 'setup','MicrosoftEdge*' -ea 0).Path -like '*\Microsoft\Edge*')
+  if ($also_remove_webview -eq 1) { foreach ($hk in 'HKCU:','HKLM:') { foreach ($wow in '','\Wow6432Node') {
+    ri "$hk\SOFTWARE${wow}\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -rec -force -ea 0 }}
+    ri "$PF\Microsoft\EdgeUpdate" -rec -force -ea 0; Unregister-ScheduledTask -TaskName MicrosoftEdgeUpdate* -Confirm:$false -ea 0
+  }  
 }}
 $appdata = $([Environment]::GetFolderPath('ApplicationData'))
 ri "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Tombstones\Microsoft Edge.lnk" -force
