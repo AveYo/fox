@@ -5,7 +5,7 @@
 `$also_remove_widgets = 1`  
 *why also remove widgets? because it is a webview glorified ad portal on msn and bing news cathering to stupid people*  
 `$also_remove_xsocial = 1`  
-*why also remove xsocial? because it starts webview setup every boot - xbox gamebar will still work without the social crap*  
+*why also remove xsocial? because it starts webview setup every boot - xbox gamebar still works without the social crap*  
 
 after removal can enter into console: `firefox` to quickly install it, or `edge` / `webview` / `xsocial` to reinstall them  
 *there's some soft-blocking involved in the latest version, so if you want to reinstall edge / webview, do it via above cmds*  
@@ -14,16 +14,16 @@ already includes OpenWebSearch
 
 ---
 
-### OpenWebSearch 2023 - redirect microsoft-edge: url from startmenu/help to the default browser  
+### OpenWebSearch 2023 - redirect microsoft-edge: urls to your default browser  
 [OpenWebSearch.cmd](OpenWebSearch.cmd)  
 **since v4 works even with Edge fully uninstalled!**  
 _if Edge is already removed, install Edge Stable, then remove it via Edge_Removal.bat (to preserve a small stub)_  
+2023.09.13: *~one year since last update (it's that stable), add even more resilience to feature updates / upgrades,  
+using a task to restore the needed hard-link if edge got reinstalled by windows and it does not open anymore*  
 supports command line parameters: `install` or `remove`  
-since v6 generate a pure batch script to prevent lame AVs false-positives  
-2023.09.13: ~one year since last update (it's that stable), add even more resilience to windows feature updates / upgrades   
-by generating a task to restore the needed hard-link if edge got reinstalled by windows and it does not open anymore  
-hybrid script, can just copy-paste into powershell  
-rebranded ChrEdgeFkOff
+since v6 generate a pure batch script to prevent lame AVs false-positives    
+hybrid script, can just copy-paste into powershell    
+yes, a rebranded ChrEdgeFkOff  
 
 ---
 
