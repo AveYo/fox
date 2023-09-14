@@ -1,9 +1,9 @@
 @(set '(=)||' <# lean and mean cmd / powershell hybrid #> @'
 
-::# OpenWebSearch Redux - open desktop & start menu web search, widgets links or help in your chosen default browser - by AveYo
-::# if Edge is already removed, try installing Edge Stable, then remove it via Edge_Removal.bat
+::# OpenWebSearch 2023 - open desktop & start menu web search, widgets links or help in your chosen default browser - by AveYo
+::# if Edge is already removed, try installing Edge Stable, then remove it again via Edge_Removal.bat
 
-@echo off & title OpenWebSearch || AveYo 2022.10.03                                   yes, this is a rebrand of ChrEdgeFkOff
+@echo off & title OpenWebSearch || AveYo 2023.09.11                                   yes, this is a rebrand of ChrEdgeFkOff
 
 ::# elevate with native shell by AveYo
 >nul reg add hkcu\software\classes\.Admin\shell\runas\command /f /ve /d "cmd /x /d /r set \"f0=%%2\"& call \"%%2\" %%3"& set _= %*
@@ -47,13 +47,19 @@ reg add "%IFEO%\ie_to_edge_stub.exe\0" /f /v Debugger /d "%CMD% %DIR%\OpenWebSea
 reg add "%IFEO%\msedge.exe" /f /v UseFilter /d 1 /t reg_dword >nul
 reg add "%IFEO%\msedge.exe\0" /f /v FilterFullPath /d "%MSE%" >nul
 reg add "%IFEO%\msedge.exe\0" /f /v Debugger /d "%CMD% %DIR%\OpenWebSearch.cmd" >nul
+:: new: automatically re-create the needed hardlink if edge is reinstalled
+set "t=$ta = New-ScheduledTaskAction -Execute '%%Temp%%\OpenWebSearchRepair.cmd'"
+set "s=$tt = New-ScheduledTaskTrigger -Once -At 00:00; $ts = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries"
+set "k=Register-ScheduledTask -TaskName 'OpenWebSearchRepair' -Action $ta -Trigger $tt -Settings $ts -RunLevel Highest -Force >''"
+powershell -nop -c "%t%;%s%;%k%;" >nul
 if "%CLI%" neq "" exit /b
-echo;& %<%:f0 " OpenWebSearch Redux "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
+echo;& %<%:f0 " OpenWebSearch 2023 "%>>% & %<%:2f " INSTALLED "%>>% & %<%:f0 " run again to remove "%>%
 timeout /t 7
 exit /b
 
 :remove
 del /f /q "%DIR%\OpenWebSearch.*" "%MSEPath%edge.exe" "%ProgramData%\ChrEdgeFkOff.*" "%MSEPath%chredge.exe" >nul 2>nul
+schtasks /delete /tn OpenWebSearchRepair /f >nul 2>nul
 reg delete HKCR\microsoft-edge /f /v "NoOpenWith" >nul 2>nul
 reg add HKCR\microsoft-edge\shell\open\command /f /ve /d "\"%MSE%\" --single-argument %%1" >nul
 reg delete HKCR\MSEdgeHTM /f /v "NoOpenWith" >nul 2>nul
@@ -61,7 +67,7 @@ reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d "\"%MSE%\" --single-argument
 reg delete "%IFEO%\ie_to_edge_stub.exe" /f >nul 2>nul
 reg delete "%IFEO%\msedge.exe" /f >nul 2>nul
 if "%CLI%" neq "" exit /b
-echo;& %<%:f0 " OpenWebSearch Redux "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
+echo;& %<%:f0 " OpenWebSearch 2023 "%>>% & %<%:df " REMOVED "%>>% & %<%:f0 " run again to install "%>%
 timeout /t 7
 exit /b
 
@@ -71,7 +77,7 @@ set [=&for /f "delims=:" %%s in ('findstr /nbrc:":%~1:\[" /c:":%~1:\]" "%~f0"')d
 <"%~f0" ((for /l %%i in (0 1 %[%) do set /p =)&for /l %%i in (%[% 1 %]%) do (set txt=&set /p txt=&echo(!txt!)) &endlocal &exit /b
 
 :OpenWebSearch_cmd:[
-@title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
+@title OpenWebSearch 2023 & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
 for /f %%E in ('"prompt $E$S& for %%e in (1) do rem"') do echo;%%E[2t 2>nul & rem AveYo: minimize prompt
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b
@@ -91,6 +97,9 @@ if defined CLI set "RED=%CLI:microsoft-edge=%"
 if defined CLI set "URL=%CLI:http=%"
 if defined CLI set "ARG=%CLI:``="%"
 if "%CLI%" equ "%RED%" (set NOOP=1) else if "%CLI%" equ "%URL%" (set NOOP=1)
+if defined NOOP if not exist "%PassTrough%" echo;@mklink /h "%PassTrough%" "%Edge%" >"%Temp%\OpenWebSearchRepair.cmd"
+if defined NOOP if not exist "%PassTrough%" schtasks /run /tn OpenWebSearchRepair 2>nul >nul
+if defined NOOP if not exist "%PassTrough%" timeout /t 3 >nul
 if defined NOOP if exist "%PassTrough%" start "" "%PassTrough%" %ARG%
 if defined NOOP exit /b
 set "URL=%CLI:*microsoft-edge=%"
