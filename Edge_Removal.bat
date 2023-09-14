@@ -9,7 +9,7 @@ $also_remove_widgets = 1
 $also_remove_xsocial = 1
 ## why also remove xsocial? because it starts webview setup every boot - xbox gamebar will still work without the social crap
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2023.09.13'
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2023.09.14'
 write-host "Run the script again whenever you need to reinstall and update edge or webview..`n"
 $remove_appx = @("MicrosoftEdge"); $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $skip = @() # @("DevTools")
 if ($also_remove_webview -eq 1) {$remove_appx += "Win32WebViewHost"; $remove_win32 += "Microsoft EdgeWebView"}
@@ -185,7 +185,7 @@ ri "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk" -force
 foreach ($sid in $users) { foreach ($PackageName in $eol) {ri "$store\EndOfLife\$sid\$PackageName" -force >''} }
 
 ## .i. "Update policies are configured but will be ignored because this device isn't domain joined" .i.
-$uids = @($EDGE_UID); $cdps = @('msedge'); if ($WEBV) {$uids += $WEBV_UID,$UPDT_UID; $cdps += 'msedgewebview','msedgeupdate'} 
+$uids = @($EDGE_UID); $cdps = @('msedge'); if ($WEBV) {$uids += $WEBV_UID; $cdps += 'msedgewebview'} 
 foreach ($sw in $ALLHIVES) {
   sp "$sw\Microsoft\EdgeUpdate" 'DoNotUpdateToEdgeWithChromium' 1 -type Dword -force
   sp "$sw\Microsoft\EdgeUpdate" 'UpdaterExperimentationAndConfigurationServiceControl' 0 -type Dword -force
@@ -204,7 +204,7 @@ foreach ($sw in $ALLHIVES) {
   sp "$sw\Microsoft\MicrosoftEdge\TabPreloader" 'AllowTabPreloading' 0 -type Dword -force
   ## microsoft has no shame, so we are gonna insist opting-out of unsolicited reinstalls with windows updates
   foreach ($cdp in $cdps) { foreach ($arch in 'x64','x86') { foreach ($zdp in '','-zdp') {
-    sp "$sw\Microsoft\EdgeUpdateDev\CdpNames" "$cdp-stable-win-$arch$zdp" "$cdp-stable-optout-$arch$zdp" -force
+    sp "$sw\Microsoft\EdgeUpdateDev\CdpNames" "$cdp-stable-win-$arch$zdp" "$cdp-stable-win-arm64$zdp" -force
   }}}
 }
 ## -------------------------------------------------------------------------------------------------------------------------------
